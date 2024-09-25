@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect  } from 'react';
 import Navbar from "../../Components/Navbar/Navbar";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,6 @@ function Tienda() {
   const [brands, setBrands] = useState([]);  // Este estado almacena las marcas
   const [showAllBrands, setShowAllBrands] = useState(false); // Estado para mostrar todas las marcas o solo las primeras 10
   const [selectedBrands, setSelectedBrands] = useState([]);
-  const [favorites, setFavorites] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(16); // Número de productos por página
   const [filters, setFilters] = useState({
@@ -32,6 +31,7 @@ function Tienda() {
 
   // Obtener los productos desde la API
   useEffect(() => {
+    
     const fetchProducts = async () => {
       try {
         const response = await fetch('http://localhost:3001/productos'); // Reemplaza con tu URL de API
@@ -70,10 +70,12 @@ function Tienda() {
       }
     };
 
+   
+
     fetchProducts();
     fetchFilters();
+    
   }, []);
-
 
   // Filtrar productos según los filtros seleccionados
   const filterProducts = () => {
@@ -136,17 +138,6 @@ function Tienda() {
     setCurrentPage(1); // Reiniciar la página actual al aplicar filtros
   };
 
-  const handleClearFilters = () => {
-    setFilters({
-      temporada: '',
-      precioMin: '',
-      precioMax: '',
-      marca: '',
-      talla: '',
-      tienda: ''
-    });
-    setFilteredProducts(products); // Restablecer los productos filtrados a la lista original
-  };
   // Función para manejar el cambio de selección de marcas
   const handleBrandChange = (brand) => {
     setSelectedBrands(prevSelectedBrands =>
@@ -181,6 +172,8 @@ function Tienda() {
         : [...prevSelectedStores, storeId] // Agregar si no está seleccionado
     );
   };
+
+ 
 
   return (
     <section>
@@ -399,40 +392,25 @@ function Tienda() {
 
           {/* Productos a la derecha */}
           <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 w-3/4">
-            {currentProducts.map((product) => (
-              <div key={product.id} className="product border p-4 rounded shadow-lg text-center">
+            {currentProducts.map((producto) => (
+              <div key={producto.idProducto} className="product border p-4 rounded shadow-lg text-center">
                 <img
-                  src={`http://localhost:3001/images/${product.foto}`}
+                  src={`http://localhost:3001/images/${producto.foto}`}
                   alt="Producto"
                   className="w-64 mx-auto mb-6"
                 />
-                <Link to={`/detalleproducto/${product.idProducto}`}>
-                  <h2 className="text-xl font-semibold mb-2">{product.producto}</h2>
+                <Link to={`/detalleproducto/${producto.idProducto}`}>
+                  <h2 className="text-xl font-semibold mb-2">{producto.producto}</h2>
                 </Link>
-                <p className="text-lg mb-4">${product.precio.toFixed(2)}</p>
+                <p className="text-lg mb-4">${producto.precio.toFixed(2)}</p>
                 <div className="flex justify-between items-center">
-                  <Link to={`/detalleproducto/${product.idProducto}`}>
+                  <Link to={`/detalleproducto/${producto.idProducto}`}>
                     <button
                       className="bg-custom text-black py-2 px-4 rounded hover:bg-second"
                     >
                       Agregar al carrito
                     </button>
-                  </Link>
-
-                  <button
-                    onClick={() => handleFavorite(product.idProducto)}
-                    className={`p-2 rounded flex items-center justify-center ${favorites.includes(product.idProducto) ? 'text-red-500' : 'text-gray-300'}`}
-                    style={{ width: '40px', height: '40px' }}
-                  >
-                    <svg
-                      className={`w-[24px] h-[24px] ${favorites.includes(product.idProducto) ? 'text-red-500' : 'text-gray-800 dark:text-white'}`}
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
-                    </svg>
-                  </button>
+                  </Link>              
                 </div>
               </div>
             ))}

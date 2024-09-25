@@ -1591,6 +1591,26 @@ app.get('/usuariogetidrol', (req, res) => {
   });
 });
 
+// Endpoint para guardar un producto en la tabla
+app.post('/guardar-favorito', (req, res) => {
+  const { idProducto, idUsuario } = req.body;
+
+  // Asegúrate de que los valores se envían correctamente
+  if (! idProducto || ! idUsuario) {
+    return res.status(400).json({ error: 'idProducto y idUsuario son requeridos' });
+  }
+
+  // Consulta para insertar el nuevo favorito
+  const query = 'INSERT INTO producto_fav (idProducto, idUsuario, fecha_reg) VALUES (?, ?, NOW())';
+
+  connection.query(query, [idProducto, idUsuario], (err, results) => {
+    if (err) {
+      console.error('Error inserting data:', err);
+      return res.status(500).json({ error: 'Error al guardar el favorito' });
+    }
+    res.status(201).json({ message: 'Favorito guardado con éxito', id: results.insertId });
+  });
+});
 
 app.listen(3001, () => {
   console.log(`Server is running on port: ${port}`);

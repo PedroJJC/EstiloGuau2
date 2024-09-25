@@ -45,6 +45,7 @@ const RoutesComponent = () => {
         <Route path="/Login" element={<Login />} />
         <Route path="/Tienda" element={<Tienda />} />
         <Route path="/Suscripciones" element={<Suscripciones />} />
+        <Route path="/DetalleProducto/:idProducto" element={<DetalleProducto />} />
 
         {/* Rutas protegidas por rol */}
         <Route
@@ -98,16 +99,6 @@ const RoutesComponent = () => {
           }
         />
 
-        <Route
-          path="/DetalleProducto/:idProducto"
-          element={
-            idRol && (idRol === 3 || idRol === 2) ? (
-              <DetalleProducto />
-            ) : (
-              <Navigate to="/Login" />
-            )
-          }
-        />
         <Route
           path="/PerfilUsuario"
           element={

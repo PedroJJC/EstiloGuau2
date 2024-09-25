@@ -9,8 +9,9 @@ function App() {
     <div className="App">
       <UserProvider>
         <RoutesComponent />
-      </UserProvider>
+     
       <OfflineDemoComponent />
+       </UserProvider>
     </div>
   );
 }
