@@ -1,11 +1,16 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../../Context/UserContext';
 import Navbar from "../../Components/Navbar/Navbar";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../../Components/Footer/Footer';
 import { Pagination, Checkbox, Label, Radio, Sidebar, RangeSlider } from "flowbite-react";
+import axios from 'axios';
+
 
 function Tienda() {
+  const { userData } = useContext(UserContext);
+  const { idUsuario } = userData; 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [brands, setBrands] = useState([]);  // Este estado almacena las marcas
@@ -26,14 +31,19 @@ function Tienda() {
   const [Tiendas, setTiendas] = useState([]);
   const [selectedSeasons, setSelectedSeasons] = useState([]);
   const [selectedStores, setSelectedStores] = useState([]);
-  const [searchBrand, setSearchBrand] = useState(''); 
+  const [searchBrand, setSearchBrand] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState(''); // Término después del debounce
   const [searchTerm, setSearchTerm] = useState(''); // El término que el usuario está escribiendo
+  const [favorites, setFavorites] = useState([]);
+  const [favoritos, setFavoritos] = useState([]);
+  const [agregado, setAgregado] = useState(false);
 
   const navigate = useNavigate();
 
-   // Efecto para actualizar el término de búsqueda con un debounce
-   useEffect(() => {
+
+
+  // Efecto para actualizar el término de búsqueda con un debounce
+  useEffect(() => {
     // Si el término tiene más de 2 letras, actualiza debouncedTerm después de 500ms
     const handler = setTimeout(() => {
       if (searchTerm.length > 2) {
@@ -47,8 +57,8 @@ function Tienda() {
     };
   }, [searchTerm]);
 
-   // Efecto para realizar la búsqueda cuando debouncedTerm cambie
-   useEffect(() => {
+  // Efecto para realizar la búsqueda cuando debouncedTerm cambie
+  useEffect(() => {
     if (debouncedTerm) {
       // Aquí iría la lógica para realizar la búsqueda (puede ser un fetch o filtro local)
       console.log(`Realizando búsqueda con el término: ${debouncedTerm}`);
@@ -104,11 +114,11 @@ function Tienda() {
       }
     };
 
-   
+
 
     fetchProducts();
     fetchFilters();
-    
+
   }, []);
 
   // Filtrar productos según los filtros seleccionados
@@ -139,12 +149,12 @@ function Tienda() {
     if (filters.talla) {
       updatedProducts = updatedProducts.filter(product => product.idTalla === Number(filters.talla));
     }
- // Filtrar por tiendas
- if (selectedStores.length > 0) {
-  updatedProducts = updatedProducts.filter(product =>
-    selectedStores.includes(product.idUsuario) // Cambiar a múltiples tiendas
-  );
-}
+    // Filtrar por tiendas
+    if (selectedStores.length > 0) {
+      updatedProducts = updatedProducts.filter(product =>
+        selectedStores.includes(product.idUsuario) // Cambiar a múltiples tiendas
+      );
+    }
 
     setFilteredProducts(updatedProducts);
 
@@ -185,7 +195,7 @@ function Tienda() {
   );
 
   // Mostrar solo las primeras 10 marcas filtradas si `showAllBrands` es falso
-const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0, 10);
+  const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0, 10);
 
   // Esta es la función que manejará los cambios de precio tanto para precio mínimo como máximo
   const handlePriceChange = (value, type) => {
@@ -210,6 +220,81 @@ const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0,
     );
   };
 
+  const handleAgregarAlCarrito = (idProducto) => {
+    if (idUsuario) {
+      // Si el usuario está autenticado, procede a agregar el producto al carrito
+      console.log(`Producto ${idProducto} agregado al carrito`);
+      // Aquí podrías llamar a una función que maneje el proceso
+    } else {
+      // Si no está autenticado, redirige al login
+      navigate('/Login');
+    }
+  };
+
+  const handleFavorite = async (idProducto) => {
+    // Verifica si hay un usuario logueado
+    if (!idUsuario) {
+      console.log('Por favor, inicia sesión para agregar a favoritos.');
+        setAgregado(true);
+        setTimeout(() => {
+            setAgregado(false);
+        }, 2000);
+        return; // Salir de la función si no hay usuario logueado
+    }
+
+    // Verifica si el producto ya está en la lista de favoritos
+    const esFavorito = favoritos.some(favorito => favorito.id === idProducto);
+
+    if (esFavorito) {
+      
+      console.log(esFavorito);
+        // Si ya es favorito, elimínalo
+        try {
+          console.log('ID Usuario:', idUsuario, 'ID Producto:', idProducto);
+            await axios.delete(`http://localhost:3001/favoritosdelete/${idUsuario}/${idProducto}`);
+            setFavoritos(favoritos.filter(favorito => favorito.id !== idProducto));
+            console.log('Producto eliminado de favoritos');
+            setAgregado(true);
+            setTimeout(() => {
+                setAgregado(false);
+            }, 2000);
+        } catch (error) {
+            console.error('Error al eliminar el favorito', error);
+        }
+    } else {
+        // Si no es favorito, agrégalo
+        try {
+            await axios.post('http://localhost:3001/guardar-favorito', {
+              idProducto,
+                idUsuario,
+            });
+            setFavoritos([...favoritos, { id: idProducto }]); // Actualiza el estado de favoritos
+            console.log('Producto agregado a favoritos');
+            setAgregado(true);
+            setTimeout(() => {
+                setAgregado(false);
+            }, 2000);
+        } catch (error) {
+            console.error('Error al agregar el favorito', error);
+        }
+    }
+};
+// En el componente Tienda
+useEffect(() => {
+  const fetchFavorites = async () => {
+    if (idUsuario) {
+      try {
+        const response = await axios.get(`http://localhost:3001/favoritos/${idUsuario}`);
+        const favoritos = response.data.map(fav => fav.idProducto);
+        setFavorites(favoritos);
+      } catch (error) {
+        console.error('Error al obtener los favoritos:', error);
+      }
+    }
+  };
+
+  fetchFavorites();
+}, [idUsuario]);
 
 
   return (
@@ -224,59 +309,59 @@ const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0,
           {/* Filtros a la izquierda */}
           <div className="flex flex-col">
             <Sidebar className='w-1/9'>
-            <h1 className="font-bold text-3xl mb-8">Filtros</h1>
+              <h1 className="font-bold text-3xl mb-8">Filtros</h1>
               <Sidebar.Items >
                 <Sidebar.ItemGroup >
-                 {/*Marca*/}
-<Sidebar.Collapse label="Marca">
-  <Sidebar.Item>
-    <div className="p-4">
-      <div className="flex flex-col space-y-2">
-        {/* Barra de búsqueda */}
-        <input
-          type="text"
-          placeholder="Buscar marca"
-          value={searchBrand}
-          onChange={(e) => setSearchBrand(e.target.value)}
-          className="p-2 border border-gray-300 rounded"
-        />
+                  {/*Marca*/}
+                  <Sidebar.Collapse label="Marca">
+                    <Sidebar.Item>
+                      <div className="p-4">
+                        <div className="flex flex-col space-y-2">
+                          {/* Barra de búsqueda */}
+                          <input
+                            type="text"
+                            placeholder="Buscar marca"
+                            value={searchBrand}
+                            onChange={(e) => setSearchBrand(e.target.value)}
+                            className="p-2 border border-gray-300 rounded"
+                          />
 
-        {/* Renderizar la lista de marcas como checkboxes */}
-        {displayedBrands.map((brand) => (
-          <div key={brand} className="flex items-center space-x-2">
-            <Checkbox
-              id={brand}
-              value={brand}
-              checked={selectedBrands.includes(brand)} // Verificar si está seleccionada
-              onChange={() => handleBrandChange(brand)} // Actualizar estado al cambiar selección
-            />
-            <Label htmlFor={brand}>{brand}</Label>
-          </div>
-        ))}
+                          {/* Renderizar la lista de marcas como checkboxes */}
+                          {displayedBrands.map((brand) => (
+                            <div key={brand} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={brand}
+                                value={brand}
+                                checked={selectedBrands.includes(brand)} // Verificar si está seleccionada
+                                onChange={() => handleBrandChange(brand)} // Actualizar estado al cambiar selección
+                              />
+                              <Label htmlFor={brand}>{brand}</Label>
+                            </div>
+                          ))}
 
-        {/* Botón para mostrar todas las marcas */}
-        {!showAllBrands && filteredBrands.length > 10 && (
-          <button
-            className="text-blue-500 mt-2"
-            onClick={() => setShowAllBrands(true)} // Mostrar todas las marcas al hacer click
-          >
-            Ver todas las marcas
-          </button>
-        )}
+                          {/* Botón para mostrar todas las marcas */}
+                          {!showAllBrands && filteredBrands.length > 10 && (
+                            <button
+                              className="text-blue-500 mt-2"
+                              onClick={() => setShowAllBrands(true)} // Mostrar todas las marcas al hacer click
+                            >
+                              Ver todas las marcas
+                            </button>
+                          )}
 
-        {/* Botón para ocultar las marcas si están todas visibles */}
-        {showAllBrands && (
-          <button
-            className="text-blue-500 mt-2"
-            onClick={() => setShowAllBrands(false)} // Volver a mostrar solo las primeras 10
-          >
-            Ver menos
-          </button>
-        )}
-      </div>
-    </div>
-  </Sidebar.Item>
-</Sidebar.Collapse>
+                          {/* Botón para ocultar las marcas si están todas visibles */}
+                          {showAllBrands && (
+                            <button
+                              className="text-blue-500 mt-2"
+                              onClick={() => setShowAllBrands(false)} // Volver a mostrar solo las primeras 10
+                            >
+                              Ver menos
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </Sidebar.Item>
+                  </Sidebar.Collapse>
 
                   {/*Temporada*/}
                   <Sidebar.Collapse label="Temporada">
@@ -374,6 +459,7 @@ const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0,
                         max={1000}
                         step={10}
                         value={filters.precioMax}
+                        disabled={filters.precioMin > filters.precioMax} // Deshabilitar si el mínimo es mayor que el máximo
                         onChange={(e) => handlePriceChange(Number(e.target.value), 'precioMax')}
                       />
                     </div>
@@ -388,47 +474,47 @@ const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0,
                   {/*Tiendas*/}
                   <Sidebar.Collapse label="Tiendas">
                     <Sidebar.Item>
-<div className="mt-4">
-    <label className="block mb-2">Tienda</label>
-    <div className="flex flex-col space-y-2">
-      {/* Renderizar las tiendas como Checkboxes */}
-      {Tiendas.map((tienda) => (
-        <div key={tienda.idUsuario} className="flex items-center space-x-2">
-          <Checkbox
-            id={`tienda-${tienda.idUsuario}`}
-            checked={selectedStores.includes(tienda.idUsuario)} // Verificar si está seleccionada
-            onChange={() => handleStoreChange(tienda.idUsuario)} // Actualizar estado al cambiar selección
-          />
-          <Label htmlFor={`tienda-${tienda.idUsuario}`}>
-            {tienda.nombre}
-          </Label>
-        </div>
-      ))}
+                      <div className="mt-4">
+                        <label className="block mb-2">Tienda</label>
+                        <div className="flex flex-col space-y-2">
+                          {/* Renderizar las tiendas como Checkboxes */}
+                          {Tiendas.map((tienda) => (
+                            <div key={tienda.idUsuario} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`tienda-${tienda.idUsuario}`}
+                                checked={selectedStores.includes(tienda.idUsuario)} // Verificar si está seleccionada
+                                onChange={() => handleStoreChange(tienda.idUsuario)} // Actualizar estado al cambiar selección
+                              />
+                              <Label htmlFor={`tienda-${tienda.idUsuario}`}>
+                                {tienda.nombre}
+                              </Label>
+                            </div>
+                          ))}
 
-      {/* Botón para limpiar la selección (opcional) */}
-      <button
-        onClick={() => {
-          setSelectedStores([]); // Limpiar selección de tiendas
-          setFilters(prev => ({ ...prev, tienda: '' })); // Restablecer filtro
-        }}
-        className="text-blue-500 mt-2"
-      >
-        Limpiar selección
-      </button>
-    </div>
-  </div>
+                          {/* Botón para limpiar la selección (opcional) */}
+                          <button
+                            onClick={() => {
+                              setSelectedStores([]); // Limpiar selección de tiendas
+                              setFilters(prev => ({ ...prev, tienda: '' })); // Restablecer filtro
+                            }}
+                            className="text-blue-500 mt-2"
+                          >
+                            Limpiar selección
+                          </button>
+                        </div>
+                      </div>
                     </Sidebar.Item>
                   </Sidebar.Collapse>
                 </Sidebar.ItemGroup>
-                
+
               </Sidebar.Items>
-                          {/* Botón para aplicar filtros */}
-            <button
-              onClick={handleApplyFilters}
-              className="bg-custom text-black py-2 mt-4 rounded hover:bg-second w-full"
-            >
-              Aplicar Filtros
-            </button>    
+              {/* Botón para aplicar filtros */}
+              <button
+                onClick={handleApplyFilters}
+                className="bg-custom text-black py-2 mt-4 rounded hover:bg-second w-full"
+              >
+                Aplicar Filtros
+              </button>
             </Sidebar>
           </div>
 
@@ -446,19 +532,42 @@ const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0,
                   <h2 className="text-xl font-semibold mb-2">{producto.producto}</h2>
                 </Link>
                 <p className="text-lg mb-4">${producto.precio.toFixed(2)}</p>
-                <div className="flex justify-between items-center">
-                  <Link to={``}>
+
+                {/** BOTONES */}
+                <div className="flex flex-row items-center">
+                  <div className="">
                     <button
-                      className="bg-custom text-black py-2 px-4 rounded hover:bg-second"
+                      className="p-1 m-1 bg-custom hover:bg-second"
+                      onClick={() => handleAgregarAlCarrito(producto.idProducto)}
                     >
                       Agregar al carrito
                     </button>
+                  </div>
+                  <div className="">
                     <button
-                      className="bg-custom text-black py-2 px-2 m-3 rounded hover:bg-second"
+                      className="p-5 m-1 bg-custom hover:bg-second"
                     >
                       Comprar
                     </button>
-                  </Link>              
+                  </div>
+                  <button
+  onClick={() => handleFavorite(producto.idProducto)}
+  className={`p-2 rounded flex items-center justify-center ${
+    favoritos.some(favorito => favorito.id === producto.idProducto) ? 'text-red-500' : 'text-gray-300'
+  }`}
+  style={{ width: '40px', height: '40px' }}
+>
+  <svg
+    className={`w-[24px] h-[24px] ${
+      favoritos.some(favorito => favorito.id === producto.idProducto) ? 'text-red-500' : 'text-gray-800 dark:text-white'
+    }`}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
+  </svg>
+</button>
                 </div>
               </div>
             ))}

@@ -137,8 +137,8 @@ const DetalleProducto = () => {
               Comprar
             </button>
 
-        <button
-             
+        
+        <button             
               className="add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second"
             >
               Agregar al carrito

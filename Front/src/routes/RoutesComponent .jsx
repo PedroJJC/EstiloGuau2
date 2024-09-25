@@ -35,6 +35,7 @@ import EditarSub from '../Pages/Suscripcion/EditarSub';
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
   const { idRol } = userData;
+  const { idUsuario } = userData;
 
   return (
     <Router>

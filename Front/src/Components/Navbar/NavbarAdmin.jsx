@@ -63,9 +63,9 @@ const NavbarAdmin = () => {
               >
                 <Dropdown.Header>
                 
-                  <span className="block text-sm">¡Bienvenido (a)!</span>
-                  <span className="block text-sm">{userData.nombre || "Nombre no disponible"}</span> {/* Mostrar nombre */}
-                  <span className="block truncate text-sm font-medium">{userData.email || "Email no disponible"}</span> {/* Mostrar email */}
+                <span className="block text-sm text-center font-semibold">¡Bienvenido (a)!</span>
+                  <span className="block text-sm text-center font-normal">{userData.nombre || "Nombre no disponible"}</span> {/* Mostrar nombre */}
+                  <span className="block truncate text-sm font-light text-center">{userData.email || "Email no disponible"}</span> {/* Mostrar email */}
                 </Dropdown.Header>
                 {/*Perfil Usuario*/}
                 <Dropdown.Item className="hover:bg-custom">

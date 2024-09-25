@@ -1612,6 +1612,31 @@ app.post('/guardar-favorito', (req, res) => {
   });
 });
 
+// Endpoint para obtener los favoritos
+app.get('/favoritos/:idUsuario', (req, res) => {
+  const { idUsuario } = req.params;
+
+  const query = 'SELECT idProducto FROM producto_fav WHERE idUsuario = ?';
+  
+  connection.query(query, [idUsuario], (err, results) => {
+    if (err) {
+      console.error('Error retrieving favorites:', err);
+      return res.status(500).json({ error: 'Error al obtener los favoritos' });
+    }
+    res.status(200).json(results);
+  });
+});
+
+// Ruta para eliminar de favoritos
+app.delete('/favoritosdelete/:idUsuario/:idProducto', (req, res) => {
+  const { idUsuario, idProducto } = req.params; // Desestructuramos ambos parámetros
+  connection.query('DELETE FROM producto_fav WHERE idUsuario = ? AND idProducto = ?', [idUsuario, idProducto], (err) => {
+    if (err) return res.status(500).json({ error: err });
+    res.sendStatus(204); // No content
+  });
+});
+
+
 app.listen(3001, () => {
   console.log(`Server is running on port: ${port}`);
 });
