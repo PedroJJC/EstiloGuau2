@@ -539,7 +539,7 @@ app.get('/all-ofertas', (req, res) => {
 //Pedro PRODUCTOS
 // Obtener todos los productos
 app.get('/productos', (req, res) => {
-  const query = 'SELECT * FROM producto';
+  const query = 'SELECT *, SUBSTRING_INDEX(producto.foto, \',\', 1) AS primera_foto FROM producto';
   connection.query(query, (error, results) => {
     if (error) {
       res.status(500).json({ message: error.message });

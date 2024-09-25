@@ -26,20 +26,54 @@ function Tienda() {
   const [Tiendas, setTiendas] = useState([]);
   const [selectedSeasons, setSelectedSeasons] = useState([]);
   const [selectedStores, setSelectedStores] = useState([]);
+  const [searchBrand, setSearchBrand] = useState(''); 
+  const [debouncedTerm, setDebouncedTerm] = useState(''); // Término después del debounce
+  const [searchTerm, setSearchTerm] = useState(''); // El término que el usuario está escribiendo
 
   const navigate = useNavigate();
 
+   // Efecto para actualizar el término de búsqueda con un debounce
+   useEffect(() => {
+    // Si el término tiene más de 2 letras, actualiza debouncedTerm después de 500ms
+    const handler = setTimeout(() => {
+      if (searchTerm.length > 2) {
+        setDebouncedTerm(searchTerm);
+      }
+    }, 500);
+
+    // Limpiar el timeout anterior si el término cambia antes de los 500ms
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+   // Efecto para realizar la búsqueda cuando debouncedTerm cambie
+   useEffect(() => {
+    if (debouncedTerm) {
+      // Aquí iría la lógica para realizar la búsqueda (puede ser un fetch o filtro local)
+      console.log(`Realizando búsqueda con el término: ${debouncedTerm}`);
+      // Ejemplo: Buscar productos que coincidan con el término
+      // fetchProductos(debouncedTerm);
+    }
+  }, [debouncedTerm]);
+
+  const handleChange = (e) => {
+    setSearchTerm(e.target.value); // Actualiza el término que el usuario escribe
+  };
+
+
   // Obtener los productos desde la API
   useEffect(() => {
-    
+
+
     const fetchProducts = async () => {
       try {
         const response = await fetch('http://localhost:3001/productos'); // Reemplaza con tu URL de API
         const data = await response.json();
         setProducts(data);
+        //console.log(data)
         setFilteredProducts(data);
 
-        // Cargar marcas únicas
         // Cargar marcas únicas y ordenarlas alfabéticamente
         const uniqueBrands = [...new Set(data.map(product => product.Marca))].sort();
         setBrands(uniqueBrands);  // Guardar las marcas en el estado, ordenadas alfabéticamente
@@ -146,9 +180,12 @@ function Tienda() {
         : [...prevSelectedBrands, brand] // Si no está seleccionada, se agrega
     );
   };
+  const filteredBrands = brands.filter((brand) =>
+    brand.toLowerCase().includes(searchBrand.toLowerCase())
+  );
 
-  // Mostrar solo las primeras 10 marcas si `showAllBrands` es falso
-  const displayedBrands = showAllBrands ? brands : brands.slice(0, 10);
+  // Mostrar solo las primeras 10 marcas filtradas si `showAllBrands` es falso
+const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0, 10);
 
   // Esta es la función que manejará los cambios de precio tanto para precio mínimo como máximo
   const handlePriceChange = (value, type) => {
@@ -173,7 +210,7 @@ function Tienda() {
     );
   };
 
- 
+
 
   return (
     <section>
@@ -190,50 +227,56 @@ function Tienda() {
             <h1 className="font-bold text-3xl mb-8">Filtros</h1>
               <Sidebar.Items >
                 <Sidebar.ItemGroup >
-                  {/*Marca*/}
-                  <Sidebar.Collapse label="Marca">
-                    <Sidebar.Item>
-                      <div className="p-4">
-                        <div className="flex flex-col space-y-2">
-                          {/* Renderizar la lista de marcas como checkboxes */}
-                          {displayedBrands.map((brand) => (
-                            <div key={brand} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={brand}
-                                value={brand}
-                                checked={selectedBrands.includes(brand)} // Verificar si está seleccionada
-                                onChange={() => handleBrandChange(brand)} // Actualizar estado al cambiar selección
-                              />
-                              <Label htmlFor={brand}>
-                                {brand}
-                              </Label>
-                            </div>
-                          ))}
+                 {/*Marca*/}
+<Sidebar.Collapse label="Marca">
+  <Sidebar.Item>
+    <div className="p-4">
+      <div className="flex flex-col space-y-2">
+        {/* Barra de búsqueda */}
+        <input
+          type="text"
+          placeholder="Buscar marca"
+          value={searchBrand}
+          onChange={(e) => setSearchBrand(e.target.value)}
+          className="p-2 border border-gray-300 rounded"
+        />
 
-                          {/* Botón para mostrar todas las marcas */}
-                          {!showAllBrands && brands.length > 10 && (
-                            <button
-                              className="text-blue-500 mt-2"
-                              onClick={() => setShowAllBrands(true)} // Mostrar todas las marcas al hacer click
-                            >
-                              Ver todas las marcas
-                            </button>
-                          )}
+        {/* Renderizar la lista de marcas como checkboxes */}
+        {displayedBrands.map((brand) => (
+          <div key={brand} className="flex items-center space-x-2">
+            <Checkbox
+              id={brand}
+              value={brand}
+              checked={selectedBrands.includes(brand)} // Verificar si está seleccionada
+              onChange={() => handleBrandChange(brand)} // Actualizar estado al cambiar selección
+            />
+            <Label htmlFor={brand}>{brand}</Label>
+          </div>
+        ))}
 
-                          {/* Botón para ocultar las marcas si están todas visibles */}
-                          {showAllBrands && (
-                            <button
-                              className="text-blue-500 mt-2"
-                              onClick={() => setShowAllBrands(false)} // Volver a mostrar solo las primeras 10
-                            >
-                              Ver menos
-                            </button>
-                          )}
+        {/* Botón para mostrar todas las marcas */}
+        {!showAllBrands && filteredBrands.length > 10 && (
+          <button
+            className="text-blue-500 mt-2"
+            onClick={() => setShowAllBrands(true)} // Mostrar todas las marcas al hacer click
+          >
+            Ver todas las marcas
+          </button>
+        )}
 
-                        </div>
-                      </div>
-                    </Sidebar.Item>
-                  </Sidebar.Collapse>
+        {/* Botón para ocultar las marcas si están todas visibles */}
+        {showAllBrands && (
+          <button
+            className="text-blue-500 mt-2"
+            onClick={() => setShowAllBrands(false)} // Volver a mostrar solo las primeras 10
+          >
+            Ver menos
+          </button>
+        )}
+      </div>
+    </div>
+  </Sidebar.Item>
+</Sidebar.Collapse>
 
                   {/*Temporada*/}
                   <Sidebar.Collapse label="Temporada">
@@ -395,20 +438,25 @@ function Tienda() {
             {currentProducts.map((producto) => (
               <div key={producto.idProducto} className="product border p-4 rounded shadow-lg text-center">
                 <img
-                  src={`http://localhost:3001/images/${producto.foto}`}
+                  src={`http://localhost:3001/images/${producto.primera_foto}`}
                   alt="Producto"
-                  className="w-64 mx-auto mb-6"
+                  className="w-64 h-64 object-cover mx-auto mb-6"
                 />
                 <Link to={`/detalleproducto/${producto.idProducto}`}>
                   <h2 className="text-xl font-semibold mb-2">{producto.producto}</h2>
                 </Link>
                 <p className="text-lg mb-4">${producto.precio.toFixed(2)}</p>
                 <div className="flex justify-between items-center">
-                  <Link to={`/detalleproducto/${producto.idProducto}`}>
+                  <Link to={``}>
                     <button
                       className="bg-custom text-black py-2 px-4 rounded hover:bg-second"
                     >
                       Agregar al carrito
+                    </button>
+                    <button
+                      className="bg-custom text-black py-2 px-2 m-3 rounded hover:bg-second"
+                    >
+                      Comprar
                     </button>
                   </Link>              
                 </div>
