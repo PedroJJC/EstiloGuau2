@@ -12,6 +12,7 @@ const FormularioProducto = () => {
   useEffect(() => {
     obtenerOfertas();
     obtenerTallas();
+    obtenerTemporadas();
     const today = new Date().toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
     setProducto((prevProducto) => ({
       ...prevProducto,
@@ -28,6 +29,15 @@ const FormularioProducto = () => {
       console.error('Error al obtener los productos:', error);
     }
   };
+  const obtenerTemporadas = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/temporada');
+      setTemporadas(response.data);
+      //console.log(response.data)
+    } catch (error) {
+      console.error('Error al obtener los productos:', error);
+    }
+  };
   const obtenerTallas = async () => {
     try {
       const response = await axios.get('http://localhost:3001/tallas');
@@ -38,8 +48,10 @@ const FormularioProducto = () => {
     }
   };
 
+
   const [ofertas, setofertas] = useState([]);
   const [tallas, settallas] = useState([]);
+  const [temporadas, setTemporadas] = useState([]);
 
   const [producto, setProducto] = useState({
     sku: '',
@@ -47,13 +59,15 @@ const FormularioProducto = () => {
     Marca: '',
     precio: '',
     idTalla: '',
+    idTemporada: '',
     descripcion: '',
     foto: [],
     idOferta: '',
     fecha_ingreso: '',
     cantidad: '',
     obtenerOfertas,
-    obtenerTallas
+    obtenerTallas,
+    obtenerTemporadas
   });
 
   const [agregado, setAgregado] = useState(false);
@@ -87,6 +101,7 @@ const FormularioProducto = () => {
       formData.append('Marca', producto.Marca);
       formData.append('precio', producto.precio);
       formData.append('idTalla', producto.idTalla);
+      formData.append('idTemporada', producto.idTemporada);
       formData.append('descripcion', producto.descripcion);
       formData.append('idOferta', producto.idOferta);
       formData.append('idUsuario', userData.idUsuario);
@@ -203,6 +218,29 @@ const FormularioProducto = () => {
                   placeholder="Ingrese la marca del producto"
                 />
               </div>
+              {/*Temporada*/}
+              <div className="mb-4">
+                <label htmlFor="idTemporada" className="block text-gray-700 font-bold mb-2">
+                  Temporada
+                </label>
+                <select
+                  type="number"
+                  id="idTemporada"
+                  name="idTemporada"
+                  value={producto.idTemporada}
+                  onChange={handleChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+
+                  <option value="" disabled>Selecciona la temporada</option>
+                  {temporadas.map((temporada) => (
+                    <option key={temporada.idTemporada} value={temporada.idTemporada}>
+                      {temporada.nombre}
+                    </option>
+                  ))}
+
+                </select>
+              </div>
               {/*Talla*/}
               <div className="mb-4">
                 <label htmlFor="idTalla" className="block text-gray-700 font-bold mb-2">
@@ -220,7 +258,7 @@ const FormularioProducto = () => {
                   <option value="" disabled>Selecciona la talla</option>
                   {tallas.map((talla) => (
                     <option key={talla.idTalla} value={talla.idTalla}>
-                      {talla.idTalla}
+                      {talla.talla}
                     </option>
                   ))}
 

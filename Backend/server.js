@@ -598,7 +598,7 @@ app.get('/detalleproducto/:id', (req, res) => {
 app.post('/producto-nuevo', upload.array('foto',4), (req, res) => {
 
   const {idUsuario, sku, Marca, producto, precio, idTalla, descripcion , idOferta,  fecha_ingreso,
-    cantidad} = req.body;
+    cantidad, idTemporada} = req.body;
   
   let foto = ''; // Inicializa foto como cadena vacía
   
@@ -614,16 +614,16 @@ app.post('/producto-nuevo', upload.array('foto',4), (req, res) => {
 
 
   // Verifica que todos los campos necesarios estén presentes antes de la inserción
-  if (producto && sku && Marca && precio && idTalla && descripcion && idUsuario &&  cantidad ) {
-    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta, fecha_ingreso,cantidad) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)';
-    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario , idOferta ,  fecha_ingreso,cantidad], (error, results) => {
+  if (producto && sku && Marca && precio && idTalla && descripcion && idUsuario &&  cantidad && idTemporada ) {
+    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta, fecha_ingreso,cantidad, idTemporada) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?,?,?)';
+    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario , idOferta ,  fecha_ingreso,cantidad, idTemporada], (error, results) => {
 
       if (error) {
         console.error( error);
         res.status(400).json({ message: 'Error ', error });
       } else {
         const productId = results.insertId;
-        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta,  fecha_ingreso,cantidad });
+        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta,  fecha_ingreso,cantidad , idTemporada});
       }
     });
   } else {
@@ -634,7 +634,7 @@ app.post('/producto-nuevo', upload.array('foto',4), (req, res) => {
 // Actualizar un producto
 app.put('/productos/:id', upload.array('foto',4), (req, res) => {
   //console.log(req.body)
-  const { producto, sku, Marca, precio, idTalla, descripcion, idOferta,  fecha_ingreso, cantidad, idUsuario} = req.body;
+  const { producto, sku, Marca, precio, idTalla, descripcion, idOferta,  fecha_ingreso, cantidad, idUsuario, idTemporada} = req.body;
   let foto = ''
   console.log(req.files )
   if (req.files && req.files.length > 0) {
@@ -643,12 +643,12 @@ app.put('/productos/:id', upload.array('foto',4), (req, res) => {
   }
   
   const updateQuery = foto
-    ? 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, foto = ?,  idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=?  WHERE idProducto = ?'
-    : 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=? WHERE idProducto = ?';
+    ? 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, foto = ?,  idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=? , idTemporada=? WHERE idProducto = ?'
+    : 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=?, idTemporada=? WHERE idProducto = ?';
    // console.log(updateQuery)
     const queryParams = foto
-    ? [producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id]
-    : [producto, sku, Marca, precio, idTalla, descripcion, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id];
+    ? [producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta, fecha_ingreso, cantidad, idUsuario,idTemporada, req.params.id]
+    : [producto, sku, Marca, precio, idTalla, descripcion, idOferta, fecha_ingreso, cantidad, idUsuario,idTemporada ,req.params.id];
     console.log(queryParams)
   connection.query(updateQuery, queryParams, (error, results) => {
     if (error) {
@@ -656,7 +656,7 @@ app.put('/productos/:id', upload.array('foto',4), (req, res) => {
     } else if (results.affectedRows === 0) {
       res.status(404).json({ message: 'Producto no encontrado' });
     } else {
-      res.json({ id: req.params.id, producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta,  fecha_ingreso, cantidad, idUsuario });
+      res.json({ id: req.params.id, producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta,  fecha_ingreso, cantidad, idUsuario, idTemporada });
     }
   });
 });
