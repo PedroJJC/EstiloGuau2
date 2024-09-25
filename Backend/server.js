@@ -1517,6 +1517,7 @@ app.get('/suscripciones', (req, res) => {
   });
 });
 
+
 // Ruta para agregar una nueva suscripción
 app.post('/suscripcion', (req, res) => {
   const { nombre_sub, descripcion_sub, duracion_sub, precio_sub } = req.body;
@@ -1571,6 +1572,24 @@ app.post('/comprar-suscripcion', (req, res) => {
   });
 });
 
+// Ruta para obtener las temporadas
+app.get('/temporada', (req, res) => {
+  connection.query('SELECT * FROM temporada', (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results);
+  });
+});
+
+app.get('/usuariogetidrol', (req, res) => {
+  const query = 'SELECT * FROM usuario where idRol = 3';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: 'nop' });
+    } else {
+      res.json(results);
+    }
+  });
+});
 
 
 app.listen(3001, () => {
