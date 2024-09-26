@@ -544,11 +544,14 @@ useEffect(() => {
                     </button>
                   </div>
                   <div className="">
+                    <Link to="/resumencompra">
                     <button
                       className="p-5 m-1 bg-custom hover:bg-second"
                     >
                       Comprar
                     </button>
+                    </Link>
+                    
                   </div>
                   <button
   onClick={() => handleFavorite(producto.idProducto)}

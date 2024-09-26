@@ -66,22 +66,12 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
           <div className="flex justify-between font-bold mt-2">
             <span>Total</span>
             <span>$467</span>
-          </div>
-
-          {/* Campo de cupón */}
-          <div className="flex mt-4">
-            <input
-              type="text"
-              placeholder="Cupón de regalo"
-              className="w-full p-2 border rounded-l"
-            />
-            <button className="bg-black text-white px-4 py-2 rounded-r hover:bg-second hover:text-black hover:font-semibold">Aplicar</button>
-          </div>
+          </div>          
         </div>
 
         {/* Botón de pago */}
         <button className="w-full mt-6 bg-black text-white py-2 rounded-lg font-semibold hover:bg-second hover:text-black hover:font-semibold hover:shadow-lg hover:shadow-slate-300 hover:border-black">
-          Pagar
+          Proceder a pago
         </button>
       </div>
     </Drawer>

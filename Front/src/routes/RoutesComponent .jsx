@@ -27,8 +27,7 @@ import FormSub from '../Pages/Suscripcion/FormSub';
 import NewSub from '../Pages/Suscripcion/NewSub';
 import Suscripciones from '../Pages/Suscripciones/Suscripciones';
 import Suscripcion from '../Pages/Suscripcion/Suscripcion';
-import FormularioSub from '../Pages/Suscripcion/FormularioSub';
-import EditarSub from '../Pages/Suscripcion/EditarSub';
+import ResumenCompra from '../Pages/Pagos/ResumenCompra';
 
 //#endregion
 
@@ -47,6 +46,7 @@ const RoutesComponent = () => {
         <Route path="/Tienda" element={<Tienda />} />
         <Route path="/Suscripciones" element={<Suscripciones />} />
         <Route path="/DetalleProducto/:idProducto" element={<DetalleProducto />} />
+        <Route path="/ResumenCompra" element={<ResumenCompra />} />
 
         {/* Rutas protegidas por rol */}
         <Route
