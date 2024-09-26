@@ -1,18 +1,26 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const dotenv = require('dotenv');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const moment = require('moment');
 
+const paymentsRoutes = require('./routes/payments');
+
+dotenv.config(); // Carga las variables de entorno
+
 const app = express();
 const port = process.env.PORT || 3001;
+
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+// Usar el enrutador de pagos
+app.use('/api/payments', paymentsRoutes);
 
 // Conexión a la base de datos
 const connection = mysql.createConnection({

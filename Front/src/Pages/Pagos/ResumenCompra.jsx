@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../Components/Navbar/Navbar';
 import { Accordion } from "flowbite-react";
 import Footers from '../../Components/Footer/Footer';
+import PaymentForm from '../../Components/Payments/PaymentForm';
+
 
 const ResumenPago = () => {
 
@@ -42,7 +44,7 @@ const ResumenPago = () => {
                       placeholder="Ingresa tu cupón de descuento"
                       className="border rounded-lg p-2 w-1/4 mr-4"
                     />
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    <button className="bg-custom text-black px-4 py-2 rounded-lg">
                       Aplicar
                     </button>
                   </div>
@@ -65,18 +67,15 @@ const ResumenPago = () => {
           </section>
         </div>
 
-        <div className="shadow-md shadow-slate-200 pb-2">
+        <div className="shadow-md shadow-slate-200 pb-1">
         <section className="mb-6 m-5">
             <h2 className="text-3xl font-bold flex justify-between items-center my-5">3. Metodo de pago</h2>
             {/* Metodos de pago */}
             <Accordion collapseAll className='shadow-md shadow-slate-200'>
               <Accordion.Panel>
-                <Accordion.Title>OpenPay</Accordion.Title>
+                <Accordion.Title>Tarjeta de crédito o débito</Accordion.Title>
                 <Accordion.Content>
-                  <p className="mb-2 text-gray-500 dark:text-gray-400">
-                    Flowbite is an open-source library of interactive components built on top of Tailwind CSS including buttons,
-                    dropdowns, modals, navbars, and more.
-                  </p>                                  
+                <PaymentForm />                          
                 </Accordion.Content>
               </Accordion.Panel>
               <Accordion.Panel>
