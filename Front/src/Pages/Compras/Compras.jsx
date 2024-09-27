@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Navbar from '../../Components/Navbar/Navbar';
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import { UserContext } from '../../Context/UserContext';

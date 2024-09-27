@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../Context/UserContext';
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Navbar from '../../Components/Navbar/Navbar';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 

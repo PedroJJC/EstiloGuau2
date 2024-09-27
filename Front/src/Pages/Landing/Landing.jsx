@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from "../../Components/Navbar/NavbarLanding";
+import Navbar from '../../Components/Navbar/Navbar';
 import { Carrusel } from "../../Components/Carrusel/Carrusel";
 import Perritos from "../../img/Perritos.jpeg"
 import PerritoCapucha from "../../img/PerritoCapucha.jpg"

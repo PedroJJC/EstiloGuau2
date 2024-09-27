@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { UserContext } from '../../Context/UserContext';
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Navbar from '../../Components/Navbar/Navbar';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 

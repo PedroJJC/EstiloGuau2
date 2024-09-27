@@ -1,6 +1,6 @@
 import React , { useContext, useState }from "react";
 import { UserContext } from '../../Context/UserContext';
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Navbar from '../../Components/Navbar/Navbar';
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import Graficas from '../../Components/Graficas/Graficas';
 import GraficasSA from '../../Components/Graficas/Graficas';
