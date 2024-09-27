@@ -126,13 +126,12 @@ const DetalleProducto = () => {
             </div>
 
           </div>
-          {/*Precio descuento/oferta para validacion joel*/}
+          {/*Precio descuento/oferta para validacion joel
           <div className="flex flex-row ">
-            <p className="font-roboto text-start text-sm old-price line-through text-red-500">$1200.99</p>
+            <p className="font-roboto text-start text-sm old-price line-through text-red-500">{producto.precio}</p>
             <p className="font-roboto text-start text-sm old-price  text-black ml-5"> - 15%</p>
-          </div>
-
-          <p className="font-roboto text-start text-2xl new-price text-green-500 my-4">${producto.precio}</p>
+          </div>*/}
+          <p className="font-roboto text-start text-2xl new-price text-green-500 my-4">${producto.precio-(producto.precio*0.5)}</p>
 
 
 
