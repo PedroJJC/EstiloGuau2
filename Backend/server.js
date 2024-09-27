@@ -26,7 +26,7 @@ app.use('/api/payments', paymentsRoutes);
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '12345',
+  password: '',
   database: 'bdestiloguau'
 });
 
