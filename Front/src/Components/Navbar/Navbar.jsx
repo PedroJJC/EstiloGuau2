@@ -39,7 +39,7 @@ const Component = () => {
 
         {/* Título "ESTILO GUAU" */}
         <div className="hidden md:block text-center">
-          <div className={`text-5xl font-semibold tracking-widest font-roboto ${isLandingPage ? "text-white" : "text-black"}`}>
+          <div className={`text-5xl font-semibold tracking-widest font-roboto ${isLandingPage ? "text-white" : "text-white"}`}>
             ESTILO GUAU
           </div>
         </div>
