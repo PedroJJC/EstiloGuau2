@@ -43,7 +43,7 @@ const Productos = () => {
 
   return (
 <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-   <NavbarAdmin />
+   <Navbar />
       <Sidebar/>
       
       <div className="carrito-container mx-4 flex-1 ">

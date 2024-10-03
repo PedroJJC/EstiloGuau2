@@ -37,7 +37,7 @@ const Suscripcion = () => {
 
   return (
     <div>
-      <NavbarAdmin />
+      <Navbar />
       <Sidebar />
       <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
         <div className="carrito-container mx-4 flex-1">

@@ -52,7 +52,7 @@ const Cupones = () => {
   return (
     <div className="">
       <div className="pl-72 pt-20  pr-24 carrito-page flex flex-col min-h-screen">
-      <NavbarAdmin />
+      <Navbar />
         <Sidebar/>
         
 
