@@ -297,45 +297,6 @@ useEffect(() => {
 }, [idUsuario]);
 
 
-const [carrito, setCarrito] = useState([]);
-
-    // Cargar el carrito desde localStorage al iniciar
-    useEffect(() => {
-        const carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
-        setCarrito(carritoGuardado);
-    }, []);
-
-    // Guardar el carrito en localStorage
-    useEffect(() => {
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-    }, [carrito]);
-
-    const agregarAlCarrito = (producto) => {
-      setCarrito((prevCarrito) => {
-          const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
-  
-          if (productoExistente) {
-              // Si el producto ya existe, aumentar su cantidad
-              return prevCarrito.map((item) =>
-                  item.idProducto === producto.idProducto
-                      ? { ...item, cantidad: item.cantidad + 1 }
-                      : item
-              );
-          } else {
-              // Si no existe, agregarlo con cantidad 1
-              return [...prevCarrito, { ...producto, cantidad: 1 }];
-          }
-      });
-  };
-
-    const eliminarDelCarrito = (id) => {
-        setCarrito((prevCarrito) => prevCarrito.filter((producto) => producto.id !== id));
-    };
-
-    const vaciarCarrito = () => {
-        setCarrito([]);
-    };
-
   return (
     <section>
       <div className="w-full pt-10 Store flex flex-col items-center min-h-screen">
@@ -574,10 +535,10 @@ const [carrito, setCarrito] = useState([]);
 
                 {/** BOTONES */}
                 <div className="flex flex-row items-center">
-                  <div>
+                  <div className="">
                     <button
                       className="p-1 m-1 bg-custom hover:bg-second"
-                      onClick={() => agregarAlCarrito(producto)}
+                      onClick={() => handleAgregarAlCarrito(producto.idProducto)}
                     >
                       Agregar al carrito
                     </button>

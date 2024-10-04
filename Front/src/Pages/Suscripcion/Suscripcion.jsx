@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { UserContext } from '../../Context/UserContext';
-import Navbar from '../../Components/Navbar/Navbar';
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
@@ -37,7 +37,7 @@ const Suscripcion = () => {
 
   return (
     <div>
-      <Navbar />
+      <NavbarAdmin />
       <Sidebar />
       <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
         <div className="carrito-container mx-4 flex-1">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import Navbar from '../../Components/Navbar/Navbar';
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
@@ -33,7 +33,7 @@ const FormSub = () => {
   return (
     <div className="">
       <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-        <Navbar />
+        <NavbarAdmin />
         <Sidebar />
         <div className="carrito-container mx-4 flex-1 ">
           <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Suscripciones</h2>

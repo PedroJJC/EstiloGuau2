@@ -1,14 +1,7 @@
 import { Drawer } from "flowbite-react";
-import React, { useState } from 'react';
 
 export default function ShoppingCart({ isOpen, setIsOpen }) {
   const handleClose = () => setIsOpen(false);
-
-    const [carrito, setCarrito] = useState(() => {
-        const storedCarrito = localStorage.getItem('carrito');
-        return storedCarrito ? JSON.parse(storedCarrito) : [];
-    });
-
 
   return (
     <Drawer
@@ -23,32 +16,41 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
 
         {/* Lista de productos */}
         <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-custom rounded-lg">
+            <img
+              src="/path-to-dog-pants-image.jpg"
+              alt="Pantalones vaqueros ajustables para perros"
+              className="w-16 h-16 object-cover rounded"
+            />
+            <div className="flex-grow ml-4">
+              <h2 className="font-semibold text-base text-left">Pantalones vaqueros ajustables para perros</h2>
+              <p className="text-sm text-gray-500 text-left">Size: Large</p>
+              <p className="font-bold text-left">$145</p>
+            </div>
+            <div className="flex items-center">
+              <button className="px-2 py-1 border rounded hover:bg-second">-</button>
+              <span className="px-2">1</span>
+              <button className="px-2 py-1 border rounded hover:bg-second">+</button>
+            </div>
+          </div>
 
-          {carrito.length === 0 ? (
-                <p>El carrito está vacío.</p>
-            ) : (
-                carrito.map((producto) => (
-
-                  <div className="flex items-center justify-between p-4 bg-custom rounded-lg">
-                  <img
-                    src="/path-to-dog-pants-image.jpg"
-                    alt="Pantalones vaqueros ajustables para perros"
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div className="flex-grow ml-4">
-                    <h2 className="font-semibold text-base text-left">{producto.producto}</h2>
-                    <p className="text-sm text-gray-500 text-left">Size: Large</p>
-                    <p className="font-bold text-left">${producto.precio.toFixed(2)}</p>
-                  </div>
-                  <div className="flex items-center">
-                    <button className="px-2 py-1 border rounded hover:bg-second">-</button>
-                    <span className="px-2">{producto.cantidad}</span>
-                    <button className="px-2 py-1 border rounded hover:bg-second">+</button>
-                  </div>
-                </div>
-
-                ))
-            )}
+          <div className="flex items-center justify-between p-4 bg-custom rounded-lg">
+            <img
+              src="/path-to-dog-coat-image.jpg"
+              alt="Abrigo térmico para perros pequeños"
+              className="w-16 h-16 object-cover rounded"
+            />
+            <div className="flex-grow ml-4">
+              <h2 className="font-semibold text-base text-left">Abrigo térmico para perros pequeños</h2>
+              <p className="text-sm text-gray-500 text-left">Size: Medium</p>
+              <p className="font-bold text-left">$180</p>
+            </div>
+            <div className="flex items-center">
+              <button className="px-2 py-1 border rounded hover:bg-second">-</button>
+              <span className="px-2">1</span>
+              <button className="px-2 py-1 border rounded hover:bg-second">+</button>
+            </div>
+          </div>
         </div>
 
         {/* Resumen de compra */}

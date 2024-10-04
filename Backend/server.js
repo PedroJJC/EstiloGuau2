@@ -1128,7 +1128,7 @@ app.get('/cupones/:id', (req, res) => {
 
 // Agregar un nuevo cupón
 app.post('/cupones-nuevo', (req, res) => {
-  const { idUsuario, cupon, descripcion, fechaRegistro, vigencia, status } = req.body;
+  const { cupon, descripcion, fechaRegistro, vigencia, status } = req.body;
 
   // Asegurarse de que status es un número entero
   const statusValue = parseInt(status, 10);
@@ -1137,23 +1137,20 @@ app.post('/cupones-nuevo', (req, res) => {
     return res.status(400).json({ message: 'Estado inválido' });
   }
 
-  // Formatear las fechas al formato 'YYYY-MM-DD'
   const formattedFechaRegistro = new Date(fechaRegistro).toISOString().split('T')[0];
   const formattedVigencia = new Date(vigencia).toISOString().split('T')[0];
 
-  // Consulta de inserción corregida
   const query = `
-    INSERT INTO cupones (idUsuario, cupon, descripcion, fechaRegistro, vigencia, status)
-    VALUES (?, ?, ?, ?, ?, ?)`; // Asegurarse de incluir los 6 valores
+    INSERT INTO cupones (cupon, descripcion, fechaRegistro, vigencia, status)
+    VALUES (?, ?, ?, ?, ?)`;
 
-  connection.query(query, [idUsuario, cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue], (error, results) => {
+  connection.query(query, [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue], (error, results) => {
     if (error) {
       console.error('Error en la consulta de inserción:', error);
       res.status(400).json({ message: error.message });
     } else {
       res.status(201).json({
         idCupon: results.insertId,
-        idUsuario,
         cupon,
         descripcion,
         fechaRegistro: formattedFechaRegistro,
@@ -1163,7 +1160,6 @@ app.post('/cupones-nuevo', (req, res) => {
     }
   });
 });
-
 
 
 // Actualizar un cupón
@@ -1219,26 +1215,6 @@ app.put('/cupones/:id', (req, res) => {
   });  
 });
 
-
-// cupones  por us
-app.get('/cuponesxus/:idUsuario', (req, res) => {
-  const { idUsuario } = req.params; // Obteniendo el parámetro de la URL
-  const query = 'SELECT * FROM cupones WHERE idUsuario = ?';
-  
-  connection.query(query, [idUsuario], (error, results) => { // Usando parámetros para evitar inyección SQL
-    if (error) {
-      return res.status(500).json({ message: error.message });
-    }
-    
-    // Convertir status numérico a texto
-    const mappedResults = results.map(cupon => ({
-      ...cupon,
-      status: cupon.status === 1 ? 'activo' : 'inactivo'
-    }));
-    
-    res.json(mappedResults);
-  });
-});
 
 // Eliminar un cupón
 app.delete('/cupones/:id', (req, res) => {

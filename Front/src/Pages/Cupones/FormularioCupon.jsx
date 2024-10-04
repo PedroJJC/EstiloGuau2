@@ -1,23 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../../Components/Navbar/Navbar';
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
-import { UserContext } from '../../Context/UserContext';
-
 
 const FormularioCupon = () => {
-  const { userData } = useContext(UserContext);  // Obteniendo los datos del usuario
+
   const [cupon, setCupon] = useState({
-    idUsuario: '',  // Agregando idUsuario al estado
     cupon: '',
     descripcion: '',
     fechaRegistro: '',
     vigencia: '',
     status: 1  // Inicializar con un valor predeterminado (activo)
   });
-
+ 
   const [agregado, setAgregado] = useState(false);
   const navigate = useNavigate();
 
@@ -32,17 +29,11 @@ const FormularioCupon = () => {
     }));
   };
   
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Asegurarse de que idUsuario está presente en el estado antes de enviar
-    const cuponData = {
-      ...cupon,
-      idUsuario: userData.idUsuario  // Incluyendo idUsuario en los datos a enviar
-    };
-
     try {
-      const response = await axios.post('http://localhost:3001/cupones-nuevo', cuponData);
+      const response = await axios.post('http://localhost:3001/cupones-nuevo', cupon);
       if (response.status === 201) {
         setAgregado(true);
         setTimeout(() => {
@@ -54,20 +45,18 @@ const FormularioCupon = () => {
       console.error('Error al agregar el cupón:', error);
     }
   };
-
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
-    
-    setCupon((prevCupon) => ({
-      ...prevCupon,
-      fechaRegistro: today,
-      idUsuario: userData.idUsuario  // Asegurar que idUsuario se incluya al montar el componente
+    setCupon((prevUsuario) => ({
+      ...prevUsuario,
+      fechaRegistro: today
     }));
-  }, [userData]);
+  }, []);
+
 
   return (
     <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-       <Navbar />
+       <NavbarAdmin />
       <Sidebar/>
      
   

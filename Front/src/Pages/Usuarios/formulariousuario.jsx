@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../../Components/Navbar/Navbar';
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import { UserContext } from '../../Context/UserContext';
@@ -89,7 +89,7 @@ const FormularioUsuario = () => {
 
   return (
     <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-       <Navbar />
+       <NavbarAdmin />
       <Sidebar />
       
         <div className="carrito-container mx-5 my-8 flex-1 ">
