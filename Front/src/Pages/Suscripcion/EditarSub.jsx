@@ -58,7 +58,7 @@ const EditarSub = () => {
 
   return (
     <div className="pl-72 pr-24 pt-20 carrito-page flex flex-col min-h-screen shadow-lg">
-       <NavbarAdmin />
+       <Navbar />
       <Sidebar/>
         <div className="carrito-container mx-4 my flex-1">
         <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Editar suscripcion</h2>
