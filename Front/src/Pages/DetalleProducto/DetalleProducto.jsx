@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import Navbar from "../../Components/Navbar/Navbar";
+import Navbar from '../../Components/Navbar/Navbar';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft } from 'react-icons/fa'; // Asegúrate de importar el ícono que desees

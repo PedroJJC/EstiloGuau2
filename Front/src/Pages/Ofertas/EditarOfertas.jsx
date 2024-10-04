@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Navbar from '../../Components/Navbar/Navbar';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
@@ -58,7 +58,7 @@ const EditarCupon = () => {
 
   return (
     <div className="pl-72 pr-24 pt-20 carrito-page flex flex-col min-h-screen shadow-lg">
-       <NavbarAdmin />
+       <Navbar />
       <Sidebar/>
         <div className="carrito-container mx-4 my flex-1">
         <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Editar oferta</h2>
