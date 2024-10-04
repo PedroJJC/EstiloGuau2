@@ -5,12 +5,12 @@ import PerritoAguacate2 from "../../img/PerritoAguacate2.jpg";
 
 export function Carrusel() {
   return (
-    <div className="h-screen">
-      <Carousel  leftControl={<span className="hidden">.</span>} 
-        rightControl={<span className="hidden">.</span>}>
-        <img src= {PerritoVerde} alt="..." />
-        <img src= {PerritoLentes} alt="..." />
-        <img src= {PerritoAguacate2} alt="..." />
+    <div className="h-96 lg:h-screen"> {/* Ajusta este valor según sea necesario */}
+      <Carousel leftControl={<span className="hidden">.</span>} 
+                rightControl={<span className="hidden">.</span>}>
+        <img className="w-full h-auto object-cover" src={PerritoVerde} alt="Perrito Verde" />
+        <img className="w-full h-auto object-cover" src={PerritoLentes} alt="Perrito Lentes" />
+        <img className="w-full h-auto object-cover" src={PerritoAguacate2} alt="Perrito Aguacate" />
       </Carousel>
     </div>
   );

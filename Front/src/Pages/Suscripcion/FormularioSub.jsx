@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Navbar from '../../Components/Navbar/Navbar';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
@@ -56,7 +56,7 @@ const FormularioSub = () => {
 
   return (
     <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-       <NavbarAdmin />
+       <Navbar />
       <Sidebar/>
      
   
@@ -106,7 +106,7 @@ const FormularioSub = () => {
 
     <div className="w-full md:w-1/2 mb-4 pl-2">
       <label htmlFor="vigencia" className="block text-gray-700 font-bold mb-2">
-        Vigencia
+        Vigenciaxd
       </label>
       <input
         type="date"

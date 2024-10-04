@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Navbar from '../../Components/Navbar/Navbar';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
@@ -56,7 +56,7 @@ const FormularioOferta = () => {
 
   return (
     <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-       <NavbarAdmin />
+       <Navbar />
       <Sidebar/>
      
   
