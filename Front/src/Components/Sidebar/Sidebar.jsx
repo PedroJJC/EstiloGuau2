@@ -74,13 +74,9 @@ const componente = ({ isOpen, toggleSidebar }) => {
                   <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
                 </Link>
 
-                <Link to="/suscripcion" >
+                <Link to="/CatSub" >
                   <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Suscripciones</Sidebar.Item>
                 </Link>
-
-               {/* <Link to="/suscripcion/form" >
-                  <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Suscripcion Add</Sidebar.Item>
-                </Link>*/}
 
                 <Link to="/usuarios">
                   <Sidebar.Item icon={HiUser} className='hover:bg-custom'>

@@ -25,8 +25,8 @@ import EditarOferta from '../Pages/Ofertas/EditarOfertas';
 import FormularioOferta from '../Pages/Ofertas/FormularioOfertas';
 import CatSub from '../Pages/Suscripcion/CatSub';
 import NewSub from '../Pages/Suscripcion/NewSub';
-import Suscripciones from '../Pages/Suscripciones/Suscripciones';
-import Suscripcion from '../Pages/Suscripcion/Suscripcion';
+import Suscripciones from '../Pages/Suscripcion/Suscripciones';
+/* import Suscripcion from '../Pages/Suscripcion/Suscripcion'; */
 import ResumenCompra from '../Pages/Pagos/ResumenCompra';
 import EditarSub from '../Pages/Suscripcion/EditarSub';
 
@@ -220,21 +220,32 @@ const RoutesComponent = () => {
         />
 
 
-        <Route
-          path="/Suscripcion"
+        {/* <Route
+          path="/Suscripciones"
           element={
             idRol && (idRol === 3|| idRol === 2) ? (
+              <Suscripciones />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />  */}
+        
+        {/* <Route
+          path="/Suscripcion"
+          element={
+            idRol && (idRol === 3) ? (
               <Suscripcion />
             ) : (
               <Navigate to="/Login" />
             )
           }
-        />
+        />  */}
 
         <Route
-          path="/suscripcion/form"
+          path="/CatSub"
           element={
-            idRol && (idRol === 3 || idRol === 2) ? (
+            idRol && (idRol === 3) ? (
               <CatSub  />
             ) : (
               <Navigate to="/Login" />

@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const moment = require('moment');
+const bodyParser = require('body-parser');
 
 const paymentsRoutes = require('./routes/payments');
 
@@ -21,12 +22,14 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 // Usar el enrutador de pagos
 app.use('/api/payments', paymentsRoutes);
+// Middleware para parsear JSON
+app.use(bodyParser.json());
 
 // Conexión a la base de datos
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '12345',
+  password: '',
   database: 'bdestiloguau'
 });
 
@@ -1274,25 +1277,6 @@ app.get('/ofertas', (req, res) => {
   });
 });
 
-
-// Obtener un cupón por ID
-/* app.get('/ofertas/:id', (req, res) => {
-  const query = 'SELECT * FROM ofertas WHERE idOferta = ?';
-  connection.query(query, [req.params.id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: 'Cupón no encontrado' });
-    } else {
-      const oferta = results[0];
-      res.json({
-        ...oferta,
-        status: oferta.status === 1 ? 'activo' : 'inactivo'
-      });
-    }
-  });
-}); */
-
 // Agregar un nuevo cupón
 app.post('/ofertas-nuevo', (req, res) => {
   const { oferta, descripcion, fechaRegistro, vigencia, status } = req.body;
@@ -1329,244 +1313,83 @@ app.post('/ofertas-nuevo', (req, res) => {
 });
 
 
-// Actualizar un cupón
-/* app.put('/cupones/:id', (req, res) => {
-  const { cupon, descripcion, fechaRegistro, vigencia, status } = req.body;
-
-  // Convertir `status` a número
-  const statusValue = parseInt(status, 10);
-
-  console.log('Datos recibidos en el backend:', {
-    cupon,
-    descripcion,
-    fechaRegistro,
-    vigencia,
-    status: statusValue
-  });
-
-  // Verificar si `statusValue` es un número válido
-  if (isNaN(statusValue) || (statusValue !== 0 && statusValue !== 1)) {
-    return res.status(400).json({ message: 'Estado inválido' });
-  }
-
-  const formattedFechaRegistro = new Date(fechaRegistro).toISOString().split('T')[0];
-  const formattedVigencia = new Date(vigencia).toISOString().split('T')[0];
-
-  const query = `
-  UPDATE cupones
-  SET cupon = ?, descripcion = ?, fechaRegistro = ?, vigencia = ?, status = ?
-  WHERE idCupon = ?`;
-
-
-  connection.query(query, [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue, req.params.id], (error, results) => {
-    console.log('Datos enviados a la consulta:', [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue, req.params.id]);
-    console.log('Resultados de la consulta:', results);
-    
-    if (error) {
-      console.error('Error en la consulta de actualización:', error);
-      res.status(400).json({ message: error.message });
-    } else {
-      if (results.affectedRows === 0) {
-        res.status(404).json({ message: 'Cupón no encontrado' });
-      } else {
-        res.json({
-          idCupon: req.params.id,
-          cupon,
-          descripcion,
-          fechaRegistro: formattedFechaRegistro,
-          vigencia: formattedVigencia,
-          status: statusValue
-        });
-      }
-    }
-  });  
-}); */
-
-
-// Eliminar un cupón
-/* app.delete('/cupones/:id', (req, res) => {
-  const query = 'DELETE FROM cupones WHERE idCupon = ?';
-  connection.query(query, [req.params.id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.affectedRows === 0) {
-      res.status(404).json({ message: 'Cupón no encontrado' });
-    } else {
-      res.json({ message: 'Cupón eliminado' });
-    }
-  });
-}); */
-//END Cupones - Pedro
-
-
-
-
-
-
-
-
-
-
-
-
-//Pedro PRODUCTOS
-// Obtener todos los productos por idUs
-/* app.get('/productosidus/:idUsuario', (req, res) => {
-
-  const query = 'SELECT * FROM producto where idUsuario = ?';
-  connection.query(query, [req.params.idUsuario], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: 'Usuario no encontrado' });
-    } else {
-      res.json(results);
-    }
-  });
-}); */
-
-
-// Obtener un producto por ID
-/* app.get('/productos/:id', (req, res) => {
-  const query = 'SELECT * FROM producto WHERE idProducto = ?';
-  connection.query(query, [req.params.id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: 'Producto no encontrado' });
-    } else {
-      res.json(results[0]);
-    }
-  });
-});
- */
-// Obtener un producto por ID
-/* app.get('/detalleproducto/:id', (req, res) => {
-  const query = 'SELECT * FROM producto WHERE idProducto = ?';
-  connection.query(query, [req.params.id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: 'Producto no encontrado' });
-    } else {
-      res.json(results[0]);
-    }
-  });
-}); */
-
-
-//Agregar Producto
-/* app.post('/producto-nuevo', upload.array('foto',4), (req, res) => {
-  const {idUsuario, sku, Marca, producto, precio, idTalla, descripcion , idOferta,  fecha_ingreso,
-    cantidad} = req.body;
-  let foto = '';
-     if (req.files && req.files.length > 0) {
-      foto = req.files.map(file => file.filename).join(',');
-    }
-  if (producto && sku && Marca && precio && idTalla && descripcion && idUsuario &&  cantidad ) {
-    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta, fecha_ingreso,cantidad) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)';
-    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario , idOferta ,  fecha_ingreso,cantidad], (error, results) => {
-
-      if (error) {
-        console.error( error);
-        res.status(400).json({ message: 'Error ', error });
-      } else {
-        const productId = results.insertId;
-        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta,  fecha_ingreso,cantidad });
-      }
-    });
-  } else {
-    res.status(400).json({ message: 'Todos los campos son requeridos' });
-  }
-}); */
-
-// Actualizar un producto
-/* app.put('/productos/:id', upload.array('foto',4), (req, res) => {
-  //console.log(req.body)
-  const { producto, sku, Marca, precio, idTalla, descripcion, idOferta,  fecha_ingreso, cantidad, idUsuario} = req.body;
-  let foto = ''
-  console.log(req.files )
-  if (req.files && req.files.length > 0) {
-    
-    foto = req.files.map(file => file.filename).join(','); // Une los nombres de los archivos con comas
-  }
-  const updateQuery = foto
-    ? 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, foto = ?,  idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=?  WHERE idProducto = ?'
-    : 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=? WHERE idProducto = ?';
-   // console.log(updateQuery)
-    const queryParams = foto
-    ? [producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id]
-    : [producto, sku, Marca, precio, idTalla, descripcion, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id];
-    console.log(queryParams)
-  connection.query(updateQuery, queryParams, (error, results) => {
-    if (error) {
-      res.status(400).json({ message: error.message });
-    } else if (results.affectedRows === 0) {
-      res.status(404).json({ message: 'Producto no encontrado' });
-    } else {
-      res.json({ id: req.params.id, producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta,  fecha_ingreso, cantidad, idUsuario });
-    }
-  });
-});
- */
-// Eliminar un producto
-/* app.delete('/productos/:id', (req, res) => {
-  const query = 'DELETE FROM producto WHERE idProducto = ?';
-  connection.query(query, [req.params.id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.affectedRows === 0) {
-      res.status(404).json({ message: 'Producto no encontrado' });
-    } else {
-      res.json({ message: 'Producto eliminado' });
-    }
-  });
-}); */
-
-// Eliminar la imagen de un producto
-/* app.delete('/productos/:id/foto', (req, res) => {
-  const { id } = req.params;
-  const query = 'UPDATE producto SET foto = "" WHERE idProducto = ?'; // Cambiar a un valor vacío
-  connection.query(query, [id], (error, results) => {
-    if (error) {
-      console.error(`Error al eliminar la imagen del producto con ID ${id}:`, error);
-      res.status(500).json({ message: 'Error interno del servidor al eliminar la imagen' });
-    } else if (results.affectedRows === 0) {
-      res.status(404).json({ message: 'Producto no encontrado' });
-    } else {
-      res.json({ message: 'Imagen eliminada exitosamente' });
-    }
-  });
-});
- */
-
-
+// Banckend para las suscripciones, crud y compra 
 // Ruta para obtener las suscripciones
 app.get('/suscripciones', (req, res) => {
   connection.query('SELECT * FROM suscripcion', (err, results) => {
     if (err) return res.status(500).json({ error: err });
-    res.json(results);
+
+    const suscripciones = results.map(suscripcion => {
+      let beneficios = [];
+      //console.log(`Beneficios antes de parsear para id_sub ${suscripcion.id_sub}:`, suscripcion.beneficios);
+      // Verifica si beneficios es un array y asígnalo directamente
+      if (Array.isArray(suscripcion.beneficios)) {
+        beneficios = suscripcion.beneficios;
+      } else if (suscripcion.beneficios) {
+        // Si es un string, intenta parsear
+        try {
+          beneficios = JSON.parse(suscripcion.beneficios);
+        } catch (parseError) {
+          console.error(`Error parsing beneficios for id_sub ${suscripcion.id_sub}:`, parseError);
+          beneficios = []; // Asignar un valor por defecto en caso de error
+        }
+      }
+      return { ...suscripcion, beneficios };
+    });
+    res.json(suscripciones);
   });
 });
-
 
 // Ruta para agregar una nueva suscripción
 app.post('/suscripcion', (req, res) => {
-  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub } = req.body;
-  connection.query('INSERT INTO suscripcion (nombre_sub, descripcion_sub, duracion_sub, precio_sub) VALUES (?, ?, ?, ?)', [nombre_sub, descripcion_sub, duracion_sub, precio_sub], (err) => {
-    if (err) return res.status(500).json({ error: err });
-    res.status(201).json({ message: 'Suscripción agregada con éxito' });
+  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios } = req.body;
+  // Validar que los campos necesarios estén presentes
+  if (!nombre_sub || !descripcion_sub || !duracion_sub || !precio_sub || !beneficios) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
+  }
+  connection.query(
+    'INSERT INTO suscripcion (nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios) VALUES (?, ?, ?, ?, ?)',
+    [nombre_sub, descripcion_sub, duracion_sub, precio_sub, JSON.stringify(beneficios)],
+    (err) => {
+      if (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ error: 'Error al agregar la suscripción. Intente nuevamente.' });
+      }
+      res.status(201).json({ message: 'Suscripción agregada con éxito' });
+    }
+  );
+});
+
+// Ruta para obtener una suscripción por ID
+app.get('/api/suscripcion/:id_sub', (req, res) => {
+  const { id_sub } = req.params;
+  connection.query('SELECT * FROM suscripcion WHERE id_sub = ?', [id_sub], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(404).json({ message: 'Suscripción no encontrada' });
+    res.json(results[0]);
   });
 });
 
-// Ruta para editar una suscripción
+// Ruta para actualizar una suscripción por ID
 app.put('/api/suscripcion/:id_sub', (req, res) => {
   const { id_sub } = req.params;
-  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub } = req.body;
-  connection.query('UPDATE suscripcion SET nombre_sub = ?, descripcion_sub = ?, duracion_sub = ?, precio_sub = ? WHERE id_sub = ?', [nombre_sub, descripcion_sub, duracion_sub, precio_sub, id_sub], (err) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json({ message: 'Suscripción actualizada con éxito' });
-  });
+  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios } = req.body;
+  try {
+    // Asegúrate de que esto sea un array o una cadena válida
+    const beneficiosJson = JSON.stringify(beneficios);
+    const query = 'UPDATE suscripcion SET nombre_sub = ?, descripcion_sub = ?, duracion_sub = ?, precio_sub = ?, beneficios = ? WHERE id_sub = ?';
+    connection.query(query, [nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficiosJson, id_sub], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ message: 'Suscripción no encontrada' });
+      }
+      res.json({ message: 'Suscripción actualizada exitosamente' });
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al procesar los beneficios.' });
+  }
 });
 
 // Ruta para eliminar una suscripción
@@ -1578,22 +1401,16 @@ app.delete('/suscripcion/:id_sub', (req, res) => {
   });
 });
 
-
 // Ruta para comprar una suscripción
 app.post('/comprar-suscripcion', (req, res) => {
   const { idUsuario, id_sub } = req.body;
-
-  // Verificar la suscripción
   connection.query('SELECT * FROM suscripcion WHERE id_sub = ?', [id_sub], (err, results) => {
     if (err) return res.status(500).json({ error: err });
     if (results.length === 0) return res.status(404).json({ error: 'Suscripción no encontrada' });
-
     const suscripcion = results[0];
-
     // Actualizar el rol del usuario
     connection.query('UPDATE usuario SET idRol = ? WHERE idUsuario = ?', [id_sub, idUsuario], (err) => {
       if (err) return res.status(500).json({ error: err });
-
       // Guardar la suscripción del usuario
       const fechaFin = new Date(Date.now() + suscripcion.duracion_sub * 24 * 60 * 60 * 1000);
       connection.query('INSERT INTO usuarioxsub (idUsuario, id_sub, fecha_inicio, fecha_fin) VALUES (?, ?, NOW(), ?)', [idUsuario, id_sub, fechaFin], (err) => {
@@ -1603,6 +1420,7 @@ app.post('/comprar-suscripcion', (req, res) => {
     });
   });
 });
+//Termino el backend para las suscripciones
 
 // Ruta para obtener las temporadas
 app.get('/temporada', (req, res) => {
@@ -1647,9 +1465,7 @@ app.post('/guardar-favorito', (req, res) => {
 // Endpoint para obtener los favoritos
 app.get('/favoritos/:idUsuario', (req, res) => {
   const { idUsuario } = req.params;
-
   const query = 'SELECT idProducto FROM producto_fav WHERE idUsuario = ?';
-  
   connection.query(query, [idUsuario], (err, results) => {
     if (err) {
       console.error('Error retrieving favorites:', err);
