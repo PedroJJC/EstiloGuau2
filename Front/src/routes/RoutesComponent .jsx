@@ -219,29 +219,6 @@ const RoutesComponent = () => {
           }
         />
 
-
-        {/* <Route
-          path="/Suscripciones"
-          element={
-            idRol && (idRol === 3|| idRol === 2) ? (
-              <Suscripciones />
-            ) : (
-              <Navigate to="/Login" />
-            )
-          }
-        />  */}
-        
-        {/* <Route
-          path="/Suscripcion"
-          element={
-            idRol && (idRol === 3) ? (
-              <Suscripcion />
-            ) : (
-              <Navigate to="/Login" />
-            )
-          }
-        />  */}
-
         <Route
           path="/CatSub"
           element={
