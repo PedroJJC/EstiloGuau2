@@ -7,6 +7,8 @@ const path = require('path');
 const fs = require('fs');
 const moment = require('moment');
 const bodyParser = require('body-parser');
+const router = express.Router();
+
 
 const paymentsRoutes = require('./routes/payments');
 
@@ -1483,6 +1485,180 @@ app.delete('/favoritosdelete/:idUsuario/:idProducto', (req, res) => {
     res.sendStatus(204); // No content
   });
 });
+
+
+// Obtener comentarios por ID de producto
+app.get('/comentarios/:idProducto', (req, res) => {
+  const query = `
+    SELECT c.*, u.nombre, u.email 
+    FROM comentarios c 
+    JOIN usuario u ON c.idUsuario = u.idUsuario 
+    WHERE c.idProducto = ?`;
+  
+  connection.query(query, [req.params.idProducto], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+
+// Agregar un comentario
+app.post('/comentarios', (req, res) => {
+  const { idUsuario, idProducto, comentario, valoracion } = req.body;
+  const query = 'INSERT INTO comentarios (idUsuario, idProducto, comentario, fecha, valoracion) VALUES (?, ?, ?, NOW(), ?)';
+  connection.query(query, [idUsuario, idProducto, comentario, valoracion], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json({ idComentario: results.insertId, idUsuario, idProducto, comentario, fecha: new Date(), valoracion });
+    }
+  });
+});
+
+/* 
+app.post('/registro-vendedor', (req, res) => {
+  const { nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, idSuscripcion } = req.body;
+
+  const query = `
+    INSERT INTO vendedor (nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, idSuscripcion, fecha_registro)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+  `;
+
+  connection.query(query, [nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, idSuscripcion], (error, results) => {
+    if (error) {
+      console.error('Error al registrar el vendedor:', error);
+      return res.status(500).send('Error en el servidor');
+    }
+    res.status(201).send('Vendedor registrado exitosamente');
+  });
+}); */
+
+
+
+// Ruta para obtener el rol basado en la suscripción
+/* app.get('/suscripcion/:id_sub', (req, res) => {
+  const { id_sub } = req.params;
+
+  // Asumiendo que tienes una tabla de suscripciones que relaciona el id_sub con el idRol
+  const query = 'SELECT idRol FROM suscripciones WHERE id_sub = ?';
+
+  connection.query(query, [id_sub], (error, results) => {
+    if (error) {
+      console.error('Error al obtener el rol de la suscripción:', error);
+      return res.status(500).send('Error en el servidor');
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Suscripción no encontrada');
+    }
+    res.send(results[0]); // Devuelve el idRol
+  });
+}); */
+
+
+app.post('/registro-vendedor', (req, res) => {
+  const { nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, id_sub } = req.body;
+
+  console.log(req.body); // Verifica los datos recibidos
+
+  // Obtén el idRol asociado a la suscripción
+  const suscripcionQuery = 'SELECT idRol FROM suscripcion WHERE id_sub = ?';
+  connection.query(suscripcionQuery, [id_sub], (err, results) => {
+    if (err) {
+      console.error('Error al obtener el rol de la suscripción:', err.message);
+      return res.status(500).send('Error al obtener el rol de la suscripción');
+    }
+
+    if (results.length === 0) {
+      return res.status(400).send('Suscripción no encontrada.');
+    }
+
+    const idRol = results[0].idRol;
+    const fechaRegistro = new Date(); // Nueva línea para obtener la fecha actual
+
+    // Inserta el vendedor
+    const insertQuery = 'INSERT INTO vendedor (nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, id_sub, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    connection.query(insertQuery, [nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, id_sub, fechaRegistro], (err, result) => {
+      if (err) {
+        console.error('Error al registrar el vendedor:', err.message);
+        return res.status(500).send('Error al registrar el vendedor');
+      }
+
+      // Actualiza el idRol del usuario
+      const updateQuery = 'UPDATE usuario SET idRol = ? WHERE idUsuario = ?';
+      connection.query(updateQuery, [idRol, idUsuario], (err, result) => {
+        if (err) {
+          console.error('Error al actualizar el rol del usuario:', err.message);
+          return res.status(500).send('Error al actualizar el rol del usuario');
+        }
+
+        res.status(201).send('Vendedor registrado y rol actualizado.');
+      });
+    });
+  });
+});
+
+
+
+// Ruta para obtener el perfil del vendedor
+app.get('/vendedor/:idUsuario', (req, res) => {
+  const { idUsuario } = req.params;
+
+  const query = 'SELECT * FROM vendedor WHERE idUsuario = ?';
+  
+  connection.query(query, [idUsuario], (error, results) => {
+    if (error) {
+      console.error('Error al obtener el vendedor:', error);
+      return res.status(500).send('Error en el servidor');
+    }
+    res.send(results[0]);
+  });
+});
+
+// Ruta para verificar si el vendedor tiene una empresa
+app.get('/empresa/verificar/:idUsuario', (req, res) => {
+  const { idUsuario } = req.params;
+
+  const query = 'SELECT * FROM vendedor WHERE idUsuario = ?';
+  
+  connection.query(query, [idUsuario], (error, results) => {
+    if (error) {
+      console.error('Error al verificar el vendedor:', error);
+      return res.status(500).send('Error en el servidor');
+    }
+    
+    if (results.length > 0) {
+      res.json({ existe: true, vendedor: results[0] }); // Si existe, devuelve el vendedor
+    } else {
+      res.json({ existe: false }); // Si no existe, devuelve false
+    }
+  });
+});
+
+
+// Endpoint para obtener el id_sub basado en idRol
+app.get('/suscripcion/:idRol', (req, res) => {
+  const rolId = req.params.idRol;
+  const query = 'SELECT id_sub, idRol FROM suscripcion WHERE idRol = ?';
+  
+  connection.query(query, [rolId], (error, results) => {
+    if (error) {
+      console.error('Error en la consulta de suscripción:', error);
+      return res.status(500).send('Error en la consulta de suscripción');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('Suscripción no encontrada');
+    }
+
+    res.json(results[0]); // Devuelve el primer resultado
+  });
+});
+
+
+
 
 
 app.listen(3001, () => {

@@ -42,6 +42,13 @@ const componente = ({ isOpen, toggleSidebar }) => {
                 <Link to="/cupones" >
                   <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
                 </Link>
+
+                <Link to="/perfil-vendedor">
+                  <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
+                    Perfil Vendedor
+                  </Sidebar.Item>
+                </Link>
+
               </>
             )}
 
@@ -81,6 +88,12 @@ const componente = ({ isOpen, toggleSidebar }) => {
                 <Link to="/usuarios">
                   <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
                     Usuarios
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/perfil-vendedor">
+                  <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
+                    Perfil Vendedor
                   </Sidebar.Item>
                 </Link>
 

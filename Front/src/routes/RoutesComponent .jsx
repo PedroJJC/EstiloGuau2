@@ -29,6 +29,9 @@ import Suscripciones from '../Pages/Suscripcion/Suscripciones';
 /* import Suscripcion from '../Pages/Suscripcion/Suscripcion'; */
 import ResumenCompra from '../Pages/Pagos/ResumenCompra';
 import EditarSub from '../Pages/Suscripcion/EditarSub';
+import RegistroVendedor from '../Pages/Vendedor/RegistroVendedor';
+import PerfilVendedor from '../Pages/PerfilUsuario/PerfilVendedor';
+import ProtectedRoute from "../Components/ProtectedRoute";
 
 //#endregion
 
@@ -45,7 +48,11 @@ const RoutesComponent = () => {
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Tienda" element={<Tienda />} />
+        
         <Route path="/Suscripciones" element={<Suscripciones />} />
+        <Route path="/registro-vendedor" element={<RegistroVendedor />} />
+        
+        
         <Route path="/DetalleProducto/:idProducto" element={<DetalleProducto />} />
         <Route path="/ResumenCompra" element={<ResumenCompra />} />
 
@@ -248,6 +255,15 @@ const RoutesComponent = () => {
             ) : (
               <Navigate to="/Login" />
             )
+          }
+        />
+
+         <Route
+          path="/perfil-vendedor"
+          element={
+            <ProtectedRoute>
+              <PerfilVendedor />
+            </ProtectedRoute>
           }
         />
 

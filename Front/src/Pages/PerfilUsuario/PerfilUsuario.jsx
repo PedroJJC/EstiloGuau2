@@ -8,15 +8,12 @@ import { FiEdit } from "react-icons/fi";
 const PerfilUsuario = () => {
   const { userData } = useContext(UserContext);
   const [usuario, setUsuario] = useState(null);
-  const [compras, setCompras] = useState(null);
+  const [compras, setCompras] = useState([]);
 
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
         const response = await Axios.get(`http://localhost:3001/usuarioget/${userData.idUsuario}`);
-        if (!response.data) {
-          throw new Error('Usuario no encontrado');
-        }
         setUsuario(response.data);
       } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error);
@@ -30,85 +27,73 @@ const PerfilUsuario = () => {
     const fetchCompras = async () => {
       try {
         const response = await Axios.get(`http://localhost:3001/compras/${userData.idUsuario}`);
-        if (!response.data) {
-          throw new Error('No se pudieron obtener las compras');
-        }
         setCompras(response.data);
       } catch (error) {
         console.error('Error al obtener las compras:', error);
-        // Manejo de errores (puedes mostrar un mensaje al usuario, etc.)
       }
     };
 
     fetchCompras();
-  }, [userData.idUsuario]); // Dependencia añadida
+  }, [userData.idUsuario]);
 
   if (!usuario) {
     return <div className="min-h-screen flex items-center justify-center font-roboto">Cargando perfil...</div>;
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100">
       <Navbar />
-      <div className="flex-row flex justify-right pt-20">
-        {/*{userData.idRol}*/}
-        <p className="pt-10 text-start font-roboto font-semibold text-5xl ml-10">Mi Cuenta</p>
-      </div>
-      <div className="flex justify-end mr-16">
-        <Link to={`/formUs`}>
-          <FiEdit className="h-10 w-10 text-black hover:text-custom cursor-pointer" />
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 mx-8">
-        <div className="col-span-2 p-4">
-          <div className="grid grid-cols-4 gap-4">
-            <div className="col-span-2 p-4">
-              <p className="text-left text-3xl font-bold pb-2 font-roboto">Nombre:</p>
-              <p className="text-left text-2xl font-roboto">{usuario.nombre} {usuario.apellido}</p>
-            </div>
-            <div className="col-span-2 p-4">
-              <p className="text-left text-3xl font-bold font-roboto pb-2">Contraseña:</p>
-              <p className="text-left text-2xl font-roboto">{'*'.repeat(usuario.password.length)}</p>
-            </div>
+      <div className="pt-28 px-10">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg mb-8">
+          <h1 className="text-5xl font-bold text-white text-center">Bienvenido, {usuario.nombre}!</h1>
+        </div>
+  
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-8 flex items-center">
+          <img src={`http://localhost:3001/images/${usuario.foto}`} alt="Usuario" className="rounded-full h-40 w-40 object-cover mr-6" />
+          <div className="flex-grow">
+            <h2 className="text-3xl font-bold">{usuario.nombre} {usuario.apellido}</h2>
+            <p className="text-lg">Email: {usuario.email}</p>
+            <p className="text-lg">Contraseña: {'*'.repeat(usuario.password.length)}</p>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-1 p-4">
-              <p className="text-left text-3xl font-bold pb-2 font-roboto">Email:</p>
-              <p className="text-left text-2xl font-roboto">{usuario.email}</p>
-            </div>
+          <Link to={`/formUs`} className="ml-4">
+            <FiEdit className="h-10 w-10 text-black hover:text-custom cursor-pointer" />
+          </Link>
+        </div>
+  
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="bg-white shadow-lg rounded-lg p-4 text-center">
+            <h3 className="text-2xl font-bold">Compras Realizadas</h3>
+            <p className="text-3xl">{compras.length}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-4 text-center">
+            <h3 className="text-2xl font-bold">Suscripciones Activas</h3>
+            <p className="text-3xl">3</p> {/* Sustituir con datos reales */}
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-4 text-center">
+            <h3 className="text-2xl font-bold">Puntos de Fidelidad</h3>
+            <p className="text-3xl">120</p> {/* Sustituir con datos reales */}
           </div>
         </div>
-        <div className="col-span-1">
-          <p className="text-left text-3xl font-bold font-roboto pb-2">Foto:</p>
-          <img src={`http://localhost:3001/images/${usuario.foto}`} alt="Usuario" className="rounded-full h-60 w-60 object-cover" />
-          {/*<img src={`${usuario.foto}`} className="round ed-full h-60 w-60 object-cover" />*/}
-        </div>
-      </div>
-
-      <div className="flex-row flex justify-right pt-4">
-        <p className="text-start font-roboto font-semibold text-5xl ml-10 pb-5">Últimas compras</p>
-      </div>
-
-      {/* Aquí debes mostrar las compras, si las tienes disponibles en el estado `compras` */}
-      {compras && (
-        <div className="grid grid-cols-3 gap-4 mx-8 ">
-          {compras.map(compra => (
-            <div key={compra.idCompra} className="flex flex-row p-4 border shadow-xl border-gray-300 rounded">
-              <img src={`http://localhost:3001/images/${compra.foto}`}
-                className=" h-28 rounded-full p-3"></img>
-              <div className='flex flex-col text-left' >
-                <p>Producto: {compra.descripcion_producto}</p>
+  
+        <h2 className="text-5xl font-semibold mb-4">Últimas Compras</h2>
+        {compras.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {compras.map(compra => (
+              <div key={compra.idCompra} className="bg-white shadow-lg rounded-lg p-4 flex flex-col">
+                <img src={`http://localhost:3001/images/${compra.foto}`} className="h-24 w-24 rounded-full mb-4 mx-auto" alt="Producto" />
+                <h3 className="font-bold">{compra.descripcion_producto}</h3>
                 <p>Precio: ${compra.precio}</p>
                 <p>Talla: {compra.talla}</p>
+                <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Ver Detalles</button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
+            ))}
+          </div>
+        ) : (
+          <p>No has realizado compras aún.</p>
+        )}
+      </div>
     </div>
-  );
+  );  
 };
 
 export default PerfilUsuario;
