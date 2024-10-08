@@ -44,24 +44,24 @@ const PerfilVendedor = () => {
             <p className="text-lg">Código Postal: {vendedor.codigo_postal}</p>
             <p className="text-lg">RFC: {vendedor.rfc}</p>
           </div>
-          <Link to={`/editar-vendedor`} className="ml-4">
-            <FiEdit className="h-10 w-10 text-black hover:text-custom cursor-pointer" />
-          </Link>
+            <Link to={`/editar-vendedor/${vendedor.idVendedor}`} className="ml-4">
+                <FiEdit className="h-10 w-10 text-black hover:text-custom cursor-pointer" />
+            </Link>
         </div>
 
         <h2 className="text-5xl font-semibold mb-4">Información Adicional</h2>
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-white shadow-lg rounded-lg p-4 text-center">
             <h3 className="text-2xl font-bold">Ventas Realizadas</h3>
-            <p className="text-3xl">10</p> {/* Sustituir con datos reales */}
+            <p className="text-3xl">0</p> {/* Sustituir con datos reales */}
           </div>
           <div className="bg-white shadow-lg rounded-lg p-4 text-center">
             <h3 className="text-2xl font-bold">Suscripciones Activas</h3>
-            <p className="text-3xl">2</p> {/* Sustituir con datos reales */}
+            <p className="text-3xl">0</p> {/* Sustituir con datos reales */}
           </div>
           <div className="bg-white shadow-lg rounded-lg p-4 text-center">
             <h3 className="text-2xl font-bold">Clientes</h3>
-            <p className="text-3xl">50</p> {/* Sustituir con datos reales */}
+            <p className="text-3xl">0</p> {/* Sustituir con datos reales */}
           </div>
         </div>
       </div>

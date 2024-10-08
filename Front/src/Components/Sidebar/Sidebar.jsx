@@ -45,7 +45,7 @@ const componente = ({ isOpen, toggleSidebar }) => {
 
                 <Link to="/perfil-vendedor">
                   <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
-                    Perfil Vendedor
+                    Mi empresa
                   </Sidebar.Item>
                 </Link>
 
@@ -93,7 +93,7 @@ const componente = ({ isOpen, toggleSidebar }) => {
 
                 <Link to="/perfil-vendedor">
                   <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
-                    Perfil Vendedor
+                    Mi Empresa
                   </Sidebar.Item>
                 </Link>
 

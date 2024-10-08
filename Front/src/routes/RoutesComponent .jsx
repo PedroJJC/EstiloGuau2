@@ -32,6 +32,8 @@ import EditarSub from '../Pages/Suscripcion/EditarSub';
 import RegistroVendedor from '../Pages/Vendedor/RegistroVendedor';
 import PerfilVendedor from '../Pages/PerfilUsuario/PerfilVendedor';
 import ProtectedRoute from "../Components/ProtectedRoute";
+import ProductoUser from '../Pages/Compras/productoUser';
+import EditarVendedor from '../Pages/Vendedor/EditarVendedor';
 
 //#endregion
 
@@ -111,7 +113,7 @@ const RoutesComponent = () => {
         <Route
           path="/PerfilUsuario"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 1 || idRol === 2 || idRol === 3 ) ? (
               <PerfilUsuario />
             ) : (
               <Navigate to="/Login" />
@@ -121,7 +123,7 @@ const RoutesComponent = () => {
         <Route
           path="/formUs"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 1 || idRol === 2 || idRol === 3 ) ? (
               <FormUs />
             ) : (
               <Navigate to="/Login" />
@@ -264,6 +266,28 @@ const RoutesComponent = () => {
             <ProtectedRoute>
               <PerfilVendedor />
             </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ver-todas-compras"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <ProductoUser  />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+
+        <Route
+          path="/editar-vendedor/:idVendedor"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <EditarVendedor  />
+            ) : (
+              <Navigate to="/Login" />
+            )
           }
         />
 

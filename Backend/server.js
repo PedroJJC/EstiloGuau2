@@ -158,41 +158,135 @@ app.get('/usuarioget/:idUsuario', (req, res) => {
 });
 
 app.get('/comprasxus/:idUsuario', (req, res) => {
-  const query = `
-SELECT 
-    producto.producto AS nombre_producto, 
-    producto.descripcion, 
-    producto.precio,
-    SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
-    tallas.talla,
-    compra.cantidad_producto,
-    compra.idUsuario,
-    compra.idCompra,
-    usuario.nombre as cliente
-FROM 
-    compra 
-JOIN 
-    producto ON compra.idProducto = producto.idProducto
-JOIN
-    tallas  ON producto.idTalla = tallas.idTalla
-JOIN
-    usuario ON compra.idUsuario = usuario.idUsuario
-WHERE 
-    producto.idUsuario = ?
-  `;
+  const idUsuario = req.params.idUsuario;
 
-  // Ejecutar la consulta con el idUsuario proporcionado
-  connection.query(query, [req.params.idUsuario], (error, results) => {
+  if (!idUsuario) {
+    return res.status(400).json({ message: 'ID de usuario es requerido.' });
+  }
+
+  const query = `
+    SELECT 
+        producto.producto AS nombre_producto, 
+        producto.descripcion, 
+        producto.precio,
+        SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
+        tallas.talla,
+        compra.cantidad_producto,
+        compra.idUsuario,
+        compra.idCompra,
+        usuario.nombre AS cliente
+    FROM 
+        compra 
+    JOIN 
+        producto ON compra.idProducto = producto.idProducto
+    JOIN
+        tallas ON producto.idTalla = tallas.idTalla
+    JOIN
+        usuario ON compra.idUsuario = usuario.idUsuario
+    WHERE 
+        compra.idUsuario = ?`;
+
+  connection.query(query, [idUsuario], (error, results) => {
     if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: 'Compras no encontradas para este usuario' });
+      console.error('Error en la ruta /comprasxus:', error);
+      return res.status(500).json({ message: error.message });
+    }
+
+    const totalCompras = results.length;
+    const puntosGanados = Math.floor(totalCompras / 5) * 0.5;
+
+    if (puntosGanados > 0) {
+      connection.query(
+        `SELECT * FROM puntos_fidelidad WHERE idUsuario = ?`,
+        [idUsuario],
+        (error, puntosResult) => {
+          if (error) {
+            console.error('Error al obtener puntos de fidelidad:', error);
+            return res.status(500).json({ message: error.message });
+          }
+
+          if (puntosResult.length > 0) {
+            const ultimaActualizacion = puntosResult[0].fecha;
+
+            // Comprobar si han pasado suficientes compras desde la última actualización
+            if (totalCompras > puntosResult[0].puntos / 0.5 * 5) {
+              // Actualizar puntos
+              connection.query(
+                `UPDATE puntos_fidelidad SET puntos = puntos + ? WHERE idUsuario = ?`,
+                [puntosGanados, idUsuario],
+                (error) => {
+                  if (error) {
+                    console.error('Error al actualizar puntos:', error);
+                    return res.status(500).json({ message: error.message });
+                  }
+                  res.json(results);
+                }
+              );
+            } else {
+              res.json(results);
+            }
+          } else {
+            // Insertar nuevos puntos
+            connection.query(
+              `INSERT INTO puntos_fidelidad (idUsuario, puntos, fecha) VALUES (?, ?, NOW())`,
+              [idUsuario, puntosGanados],
+              (error) => {
+                if (error) {
+                  console.error('Error al insertar puntos:', error);
+                  return res.status(500).json({ message: error.message });
+                }
+                res.json(results);
+              }
+            );
+          }
+        }
+      );
     } else {
       res.json(results);
     }
   });
 });
 
+
+app.get('/todas-compras/:idUsuario', (req, res) => {
+  const idUsuario = req.params.idUsuario;
+
+  if (!idUsuario) {
+    return res.status(400).json({ message: 'ID de usuario es requerido.' });
+  }
+
+  const query = `
+    SELECT 
+        producto.producto AS nombre_producto, 
+        producto.descripcion, 
+        producto.precio,
+        SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
+        tallas.talla,
+        compra.cantidad_producto,
+        compra.idUsuario,
+        compra.idCompra,
+        usuario.nombre AS cliente
+    FROM 
+        compra 
+    JOIN 
+        producto ON compra.idProducto = producto.idProducto
+    JOIN
+        tallas ON producto.idTalla = tallas.idTalla
+    JOIN
+        usuario ON compra.idUsuario = usuario.idUsuario
+    WHERE 
+        compra.idUsuario = ?
+    ORDER BY 
+        compra.idCompra DESC`; // Cambiado a idCompra
+
+  connection.query(query, [idUsuario], (error, results) => {
+    if (error) {
+      console.error('Error en la ruta /todas-compras:', error);
+      return res.status(500).json({ message: error.message });
+    }
+    res.json(results);
+  });
+});
 
 
 
@@ -1658,7 +1752,63 @@ app.get('/suscripcion/:idRol', (req, res) => {
 });
 
 
+app.get('/suscripciones-activas/:idUsuario', (req, res) => {
+  const { idUsuario } = req.params;
+  connection.query('SELECT COUNT(*) AS totalSuscripciones FROM vendedor WHERE idUsuario = ?', [idUsuario], (err, results) => {
+    if (err) {
+      console.error('Error en la consulta:', err);
+      return res.status(500).json({ error: err });
+    }
+    res.json({ totalSuscripciones: results[0].totalSuscripciones });
+  });
+});
 
+
+app.get('/puntos-fidelidad/:idUsuario', (req, res) => {
+  connection.query(`SELECT SUM(puntos) AS totalPuntos FROM puntos_fidelidad WHERE idUsuario = ?`, [req.params.idUsuario], (error, results) => {
+      if (error) {
+          return res.status(500).json({ message: error.message });
+      }
+      res.json({ totalPuntos: results[0].totalPuntos || 0 });
+  });
+});
+
+
+
+app.put('/vendedor/:idVendedor', (req, res) => {
+  const { idVendedor } = req.params;
+  const { nom_empresa, telefono, direccion, codigo_postal, pais, estado, rfc } = req.body;
+
+  const query = `
+    UPDATE vendedor 
+    SET nom_empresa = ?, telefono = ?, direccion = ?, codigo_postal = ?, pais = ?, estado = ?, rfc = ? 
+    WHERE idVendedor = ?
+  `;
+
+  connection.query(query, [nom_empresa, telefono, direccion, codigo_postal, pais, estado, rfc, idVendedor], (error, results) => {
+    if (error) {
+      console.error('Error al actualizar el vendedor:', error);
+      res.status(500).json({ message: 'Error al actualizar el vendedor' });
+    } else {
+      res.json({ message: 'Vendedor actualizado exitosamente' });
+    }
+  });
+});
+
+
+/* 
+app.post('/compras', async (req, res) => {
+  // lógica para registrar la compra
+  // luego verifica la cantidad de compras
+  const { idUsuario } = req.body;
+
+  const compras = await connection.query('SELECT COUNT(*) AS totalCompras FROM compra WHERE idUsuario = ?', [idUsuario]);
+  if (compras[0].totalCompras >= 5) {
+    // Otorgar puntos
+    await connection.query('INSERT INTO puntos_fidelidad (idUsuario, puntos, fecha) VALUES (?, ?, ?)', [idUsuario, 10, new Date()]);
+  }
+});
+ */
 
 
 app.listen(3001, () => {
