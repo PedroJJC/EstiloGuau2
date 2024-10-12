@@ -44,7 +44,8 @@ const FormularioSuscripcion = () => {
 
     const nuevaSuscripcion = {
       ...suscripcion,
-      beneficios: JSON.stringify(beneficiosArray) // Convertir a JSON
+      //beneficios: JSON.stringify(beneficiosArray) // Convertir a JSON
+      beneficios: beneficiosArray // Mantener como array
     };
 
     try {
@@ -53,7 +54,7 @@ const FormularioSuscripcion = () => {
         setAgregado(true);
         setTimeout(() => {
           setAgregado(false);
-          navigate('/suscripcion');
+          navigate('/CatSub');
         }, 2000);
       }
     } catch (error) {
