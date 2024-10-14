@@ -1,15 +1,8 @@
 import { Drawer } from "flowbite-react";
-import React, { useState } from 'react';
+import React, { useEffect, useState} from 'react';
 
-export default function ShoppingCart({ isOpen, setIsOpen }) {
+export default function ShoppingCart({ isOpen, setIsOpen, carrito, eliminarDelCarrito, agregarAlCarrito, vaciarCarrito, disminuirCantidad }) {
   const handleClose = () => setIsOpen(false);
-
-    const [carrito, setCarrito] = useState(() => {
-        const storedCarrito = localStorage.getItem('carrito');
-        return storedCarrito ? JSON.parse(storedCarrito) : [];
-    });
-
-
   return (
     <Drawer
       open={isOpen}
@@ -23,32 +16,45 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
 
         {/* Lista de productos */}
         <div className="space-y-4">
-
-          {carrito.length === 0 ? (
+        {carrito.length === 0 ? (
                 <p>El carrito está vacío.</p>
             ) : (
                 carrito.map((producto) => (
-
-                  <div className="flex items-center justify-between p-4 bg-custom rounded-lg">
-                  <img
-                    src="/path-to-dog-pants-image.jpg"
-                    alt="Pantalones vaqueros ajustables para perros"
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div className="flex-grow ml-4">
-                    <h2 className="font-semibold text-base text-left">{producto.producto}</h2>
-                    <p className="text-sm text-gray-500 text-left">Size: Large</p>
-                    <p className="font-bold text-left">${producto.precio.toFixed(2)}</p>
-                  </div>
-                  <div className="flex items-center">
-                    <button className="px-2 py-1 border rounded hover:bg-second">-</button>
-                    <span className="px-2">{producto.cantidad}</span>
-                    <button className="px-2 py-1 border rounded hover:bg-second">+</button>
-                  </div>
-                </div>
-
-                ))
-            )}
+                  <div key={producto.idProducto} className="flex items-center justify-between p-4 bg-custom rounded-lg">
+        <img
+            src="/path-to-dog-pants-image.jpg" // Cambia esto a la URL real de la imagen
+            alt={producto.descripcion}
+            className="w-16 h-16 object-cover rounded"
+        />
+        <div className="flex-grow ml-4">
+            <h2 className="font-semibold text-base text-left">{producto.producto}</h2>
+            <p className="text-sm text-gray-500 text-left">Size: Large</p>
+            <p className="font-bold text-left">${producto.precio.toFixed(2)}</p>
+        </div>
+        <div className="flex items-center">
+            <button 
+                className="px-2 py-1 border rounded hover:bg-second"
+                onClick={() => disminuirCantidad(producto.idProducto)} // Asegúrate de tener la función disminuirCantidad definida
+            >
+                -
+            </button>
+            <span className="px-2">{producto.cantidad}</span> {/* Muestra la cantidad del producto */}
+            <button 
+                className="px-2 py-1 border rounded hover:bg-second"
+                onClick={() => agregarAlCarrito(producto)} // Asegúrate de tener la función agregarAlCarrito definida
+            >
+                +
+            </button>
+            <button 
+                className="ml-2 px-2 py-1 border rounded hover:bg-red-500 hover:text-white"
+                onClick={() => eliminarDelCarrito(producto.idProducto)} // Asegúrate de tener la función eliminarDelCarrito definida
+            >
+                Eliminar
+            </button>
+        </div>
+    </div>
+                 ))
+                )}
         </div>
 
         {/* Resumen de compra */}
