@@ -1,7 +1,7 @@
 import { Drawer } from "flowbite-react";
 import React, { useEffect, useState} from 'react';
 
-export default function ShoppingCart({ isOpen, setIsOpen, carrito, eliminarDelCarrito, agregarAlCarrito, vaciarCarrito, disminuirCantidad }) {
+export default function ShoppingCart({ isOpen, setIsOpen,  carrito = [], eliminarDelCarrito, agregarAlCarrito, vaciarCarrito, disminuirCantidad }) {
   const handleClose = () => setIsOpen(false);
   return (
     <Drawer
