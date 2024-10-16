@@ -8,14 +8,13 @@ import { Dropdown, Navbar } from "flowbite-react";
 import ShoppingCart from '../ShoppingCart/ShoppingCart';
 import Logo from "../../img/Logo.png";
 
-const Component = () => {
+const Component = ({carrito, eliminarDelCarrito, agregarAlCarrito, vaciarCarrito, disminuirCantidad}) => {
   const { userData, logout } = useContext(UserContext);
   const { idUsuario, idRol } = userData;
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isLandingPage = location.pathname === "/"; 
-
   const handleLogout = () => {
     logout();
   };
@@ -50,7 +49,7 @@ const Component = () => {
           <button onClick={() => setIsCartOpen(true)} className={`h-9 w-9 ${isLandingPage ? "bg-black" : ""}`} aria-hidden="true">
             <ShoppingCartIcon className={`h-9 w-9 ${isLandingPage ? "text-white" : "text-red-500"}`} aria-hidden="true" />
           </button>
-          <ShoppingCart isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
+          <ShoppingCart isOpen={isCartOpen} setIsOpen={setIsCartOpen} carrito={carrito} eliminarDelCarrito={eliminarDelCarrito} agregarAlCarrito={agregarAlCarrito} vaciarCarrito={vaciarCarrito} disminuirCantidad={disminuirCantidad}/>
 
           {/* Enlace a la tienda */}
           <Link to="/Tienda">
