@@ -90,6 +90,10 @@ const Component = ({carrito, eliminarDelCarrito, agregarAlCarrito, vaciarCarrito
               </Dropdown.Item>
             )}
 
+            <Dropdown.Item>
+              <Link to="/Uscupones">Mis cupones</Link>
+            </Dropdown.Item>
+
             {(idRol === 2 || idRol === 3) && (
               <Dropdown.Item>
                 <Link to="/dashboard">Dashboard</Link>

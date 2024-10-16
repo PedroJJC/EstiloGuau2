@@ -34,6 +34,7 @@ import PerfilVendedor from '../Pages/PerfilUsuario/PerfilVendedor';
 import ProtectedRoute from "../Components/ProtectedRoute";
 import ProductoUser from '../Pages/Compras/productoUser';
 import EditarVendedor from '../Pages/Vendedor/EditarVendedor';
+import Uscupones from '../Pages/Uscupones/Uscupones';
 
 //#endregion
 
@@ -51,7 +52,8 @@ const RoutesComponent = () => {
         <Route path="/Login" element={<Login />} />
         <Route path="/Tienda" element={<Tienda />} />
         
-        <Route path="/Suscripciones" element={<Suscripciones />} />
+        <Route path="/Suscripciones" element={<Suscripciones />} />      
+        <Route path="/Uscupones" element={<Uscupones />} />      
         <Route path="/registro-vendedor" element={<RegistroVendedor />} />
         
         
