@@ -1437,7 +1437,7 @@ app.get('/suscripciones', (req, res) => {
 });
 
 // Ruta para agregar una nueva suscripción
-app.post('/suscripcion', (req, res) => {
+/* app.post('/suscripcion', (req, res) => {
   const { nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios } = req.body;
   // Validar que los campos necesarios estén presentes
   if (!nombre_sub || !descripcion_sub || !duracion_sub || !precio_sub || !beneficios) {
@@ -1454,7 +1454,31 @@ app.post('/suscripcion', (req, res) => {
       res.status(201).json({ message: 'Suscripción agregada con éxito' });
     }
   );
+}); */
+
+// Ruta para agregar una nueva suscripción
+app.post('/suscripcion', (req, res) => {
+  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios } = req.body;
+  const idRol = 2; // Reemplaza esto con el valor real que necesites
+
+  // Validar que los campos necesarios estén presentes
+  if (!nombre_sub || !descripcion_sub || !duracion_sub || !precio_sub || !beneficios) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
+  }
+
+  connection.query(
+    'INSERT INTO suscripcion (nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios, idRol) VALUES (?, ?, ?, ?, ?, ?)',
+    [nombre_sub, descripcion_sub, duracion_sub, precio_sub, JSON.stringify(beneficios), idRol],
+    (err) => {
+      if (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ error: 'Error al agregar la suscripción. Intente nuevamente.' });
+      }
+      res.status(201).json({ message: 'Suscripción agregada con éxito' });
+    }
+  );
 });
+
 
 // Ruta para obtener una suscripción por ID
 app.get('/api/suscripcion/:id_sub', (req, res) => {
@@ -1654,9 +1678,7 @@ app.post('/registro-vendedor', (req, res) => {
 
 app.post('/registro-vendedor', (req, res) => {
   const { nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, id_sub } = req.body;
-
-  console.log(req.body); // Verifica los datos recibidos
-
+  console.log(req.body);
   // Obtén el idRol asociado a la suscripción
   const suscripcionQuery = 'SELECT idRol FROM suscripcion WHERE id_sub = ?';
   connection.query(suscripcionQuery, [id_sub], (err, results) => {
@@ -1670,7 +1692,7 @@ app.post('/registro-vendedor', (req, res) => {
     }
 
     const idRol = results[0].idRol;
-    const fechaRegistro = new Date(); // Nueva línea para obtener la fecha actual
+    const fechaRegistro = new Date();
 
     // Inserta el vendedor
     const insertQuery = 'INSERT INTO vendedor (nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, id_sub, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
