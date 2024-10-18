@@ -1818,6 +1818,8 @@ app.put('/vendedor/:idVendedor', (req, res) => {
 });
 
 
+
+
 /* 
 app.post('/compras', async (req, res) => {
   // lógica para registrar la compra
@@ -1831,6 +1833,28 @@ app.post('/compras', async (req, res) => {
   }
 });
  */
+
+app.get('/cuponesvigentes/:idUsuario', (req, res) => {
+  const idUsuario = req.params.idUsuario;
+  console.log("Usuario ID recibido: ", idUsuario); // Agrega esto para verificar
+  
+  connection.query(`
+    SELECT * 
+    FROM cupones 
+    JOIN cuponxusuario ON cupones.idCupon = cuponxusuario.idCupon
+    WHERE cuponxusuario.idUsuario = ?`, 
+    [idUsuario], // Uso de ? para proteger contra inyección SQL
+    (error, results) => {
+      if (error) {
+          return res.status(500).json({ message: error.message });
+      }
+      console.log("Resultados de cupones: ", results); // Verifica aquí qué se devuelve
+      res.json(results); // Envío todos los resultados, no solo el primero
+  });
+});
+
+
+
 
 
 app.listen(3001, () => {
