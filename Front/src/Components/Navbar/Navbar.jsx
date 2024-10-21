@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/react/24/solid';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import './Navbar.css';
-import { Dropdown, Navbar } from "flowbite-react";
+import { Dropdown, Navbar, Tabs  } from "flowbite-react";
 import ShoppingCart from '../ShoppingCart/ShoppingCart';
 import Logo from "../../img/Logo.png";
 
@@ -16,7 +16,7 @@ const Component = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isLandingPage = location.pathname === "/"; 
-  const handleLogout = () => {
+    const handleLogout = () => {
     logout();
   };
 
@@ -35,6 +35,8 @@ const Component = () => {
             <img className="h-20 w-auto" src={Logo} alt="Logo" />
           </Link>
         </Navbar.Brand>
+
+       
         
 
         {/* Título "ESTILO GUAU" */}
@@ -61,6 +63,7 @@ const Component = () => {
               <ShoppingBagIcon className={`h-9 w-9 ${isLandingPage ? "text-white" : "text-red-500"}`} aria-hidden="true" />
             </button>
           </Link>
+          
 
           {/* Dropdown del usuario */}
           <Dropdown
@@ -114,6 +117,9 @@ const Component = () => {
             </Dropdown.Item>
           </Dropdown>
         </div>
+
+       
+
 
         {/* Botón de menú para pantallas pequeñas */}
         <div className="md:hidden flex items-center">
@@ -185,7 +191,7 @@ const Component = () => {
             )}
           </div>
         </div>
-      )}
+      )}  
     </Navbar>
   );
 };

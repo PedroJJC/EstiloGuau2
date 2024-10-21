@@ -7,6 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import Footer from '../../Components/Footer/Footer';
 import { Pagination, Checkbox, Label, Radio, Sidebar, RangeSlider } from "flowbite-react";
 import axios from 'axios';
+import {Tabs  } from "flowbite-react";
+import { HiAdjustments, HiClipboardList, HiUserCircle } from "react-icons/hi";
+import { MdDashboard } from "react-icons/md";
+
 
 
 function Tienda() {
@@ -345,297 +349,358 @@ const agregarAlCarrito = (producto) => {
 };
 
   return (
-    <section>
-      <div className="w-full pt-10 Store flex flex-col items-center min-h-screen">
-        <Navbar/>
-        <header className="w-full">
-          <div className="flex justify-between items-center p-4">
+<div className="flex flex-col min-h-screen pt-28">
+  <Navbar /> {/* Navbar arriba */}
+  
+  <div className="flex flex-1">
+    {/* Sidebar de Filtros a la izquierda */}
+    <Sidebar className="w-1/5 border-r p-10">
+      <h1 className="font-bold text-3xl mb-8">Filtros</h1>
+      <Sidebar.Items>
+        <Sidebar.ItemGroup>
+          {/* Marca */}
+          <Sidebar.Collapse label="Marca">
+            <Sidebar.Item>
+              <div className="p-4">
+                <input
+                  type="text"
+                  placeholder="Buscar marca"
+                  value={searchBrand}
+                  onChange={(e) => setSearchBrand(e.target.value)}
+                  className="p-2 border border-gray-100 rounded w-full mb-2"
+                />
+                {displayedBrands.map((brand) => (
+                  <div key={brand} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={brand}
+                      value={brand}
+                      checked={selectedBrands.includes(brand)}
+                      onChange={() => handleBrandChange(brand)}
+                    />
+                    <Label htmlFor={brand}>{brand}</Label>
+                  </div>
+                ))}
+                {!showAllBrands && filteredBrands.length > 10 && (
+                  <button
+                    className="text-blue-500 mt-2"
+                    onClick={() => setShowAllBrands(true)}
+                  >
+                    Ver todas las marcas
+                  </button>
+                )}
+                {showAllBrands && (
+                  <button
+                    className="text-blue-500 mt-2"
+                    onClick={() => setShowAllBrands(false)}
+                  >
+                    Ver menos
+                  </button>
+                )}
+              </div>
+            </Sidebar.Item>
+          </Sidebar.Collapse>
+
+          {/* Temporada */}
+          <Sidebar.Collapse label="Temporada">
+            <Sidebar.Item>
+              <div className="mt-4">
+                {temporadas.map((temporada) => (
+                  <div key={temporada.idTemporada} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`temporada-${temporada.idTemporada}`}
+                      checked={selectedSeasons.includes(temporada.idTemporada)}
+                      onChange={() => handleSeasonChange(temporada.idTemporada)}
+                    />
+                    <Label htmlFor={`temporada-${temporada.idTemporada}`}>
+                      {temporada.nombre}
+                    </Label>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setSelectedSeasons([])}
+                  className="text-blue-500 mt-2"
+                >
+                  Limpiar selección
+                </button>
+              </div>
+            </Sidebar.Item>
+          </Sidebar.Collapse>
+
+          {/* Tallas */}
+          <Sidebar.Collapse label="Tallas">
+            <Sidebar.Item>
+              <div className="mt-4">
+                {tallas.map((talla) => (
+                  <div key={talla.idTalla} className="flex items-center space-x-2">
+                    <Radio
+                      id={`talla-${talla.idTalla}`}
+                      name="talla"
+                      value={talla.idTalla}
+                      checked={filters.talla === String(talla.idTalla)}
+                      onChange={handleFilterChange}
+                    />
+                    <Label htmlFor={`talla-${talla.idTalla}`}>{talla.talla}</Label>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setFilters({ talla: '' })}
+                  className="text-blue-500 mt-2"
+                >
+                  Limpiar selección
+                </button>
+              </div>
+            </Sidebar.Item>
+          </Sidebar.Collapse>
+
+          {/* Precio Mínimo y Máximo */}
+          <Sidebar.Item>
+            <Label className="block mt-4">Precio Mínimo: ${filters.precioMin}</Label>
+            <RangeSlider
+              min={0}
+              max={1000}
+              step={10}
+              value={filters.precioMin}
+              onChange={(e) => handlePriceChange(Number(e.target.value), 'precioMin')}
+            />
+            <Label className="block mt-4">Precio Máximo: ${filters.precioMax}</Label>
+            <RangeSlider
+              min={filters.precioMin}
+              max={1000}
+              step={10}
+              value={filters.precioMax}
+              onChange={(e) => handlePriceChange(Number(e.target.value), 'precioMax')}
+            />
+            <button
+              onClick={() => setFilters({ precioMin: 0, precioMax: 1000 })}
+              className="text-blue-500 mt-4"
+            >
+              Restablecer Precios
+            </button>
+          </Sidebar.Item>
+
+          {/* Tiendas */}
+          <Sidebar.Collapse label="Tiendas">
+            <Sidebar.Item>
+              <div className="mt-4">
+                {Tiendas.map((tienda) => (
+                  <div key={tienda.idUsuario} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`tienda-${tienda.idUsuario}`}
+                      checked={selectedStores.includes(tienda.idUsuario)}
+                      onChange={() => handleStoreChange(tienda.idUsuario)}
+                    />
+                    <Label htmlFor={`tienda-${tienda.idUsuario}`}>{tienda.nombre}</Label>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setSelectedStores([])}
+                  className="text-blue-500 mt-2"
+                >
+                  Limpiar selección
+                </button>
+              </div>
+            </Sidebar.Item>
+          </Sidebar.Collapse>
+        </Sidebar.ItemGroup>
+      </Sidebar.Items>
+
+      <button
+        onClick={handleApplyFilters}
+        className="bg-custom text-black py-2 mt-4 rounded hover:bg-second w-full"
+      >
+        Aplicar Filtros
+      </button>
+    </Sidebar>
+
+
+    <div className="w-3/4 p-3 flex flex-col"> {/* Contenedor de productos y tabs */}
+      {/* Buscador siempre visible arriba */}
+      <div className="flex justify-end">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+            <svg
+              className="h-5 w-5 text-gray-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 18l6-6M4 10a6 6 0 1112 0 6 6 0 01-12 0z"
+              />
+            </svg>
           </div>
-        </header>
-        <div className="flex justify-center items-start w-full flex-1 mt-8">
-          {/* Filtros a la izquierda */}
-          <div className="flex flex-col">
-            <Sidebar className='w-1/9'>
-              <h1 className="font-bold text-3xl mb-8">Filtros</h1>
-              <Sidebar.Items >
-                <Sidebar.ItemGroup >
-                  {/*Marca*/}
-                  <Sidebar.Collapse label="Marca">
-                    <Sidebar.Item>
-                      <div className="p-4">
-                        <div className="flex flex-col space-y-2">
-                          {/* Barra de búsqueda */}
-                          <input
-                            type="text"
-                            placeholder="Buscar marca"
-                            value={searchBrand}
-                            onChange={(e) => setSearchBrand(e.target.value)}
-                            className="p-2 border border-gray-300 rounded"
-                          />
+        </div>
+      </div>
 
-                          {/* Renderizar la lista de marcas como checkboxes */}
-                          {displayedBrands.map((brand) => (
-                            <div key={brand} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={brand}
-                                value={brand}
-                                checked={selectedBrands.includes(brand)} // Verificar si está seleccionada
-                                onChange={() => handleBrandChange(brand)} // Actualizar estado al cambiar selección
-                              />
-                              <Label htmlFor={brand}>{brand}</Label>
-                            </div>
-                          ))}
-
-                          {/* Botón para mostrar todas las marcas */}
-                          {!showAllBrands && filteredBrands.length > 10 && (
-                            <button
-                              className="text-blue-500 mt-2"
-                              onClick={() => setShowAllBrands(true)} // Mostrar todas las marcas al hacer click
-                            >
-                              Ver todas las marcas
-                            </button>
-                          )}
-
-                          {/* Botón para ocultar las marcas si están todas visibles */}
-                          {showAllBrands && (
-                            <button
-                              className="text-blue-500 mt-2"
-                              onClick={() => setShowAllBrands(false)} // Volver a mostrar solo las primeras 10
-                            >
-                              Ver menos
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </Sidebar.Item>
-                  </Sidebar.Collapse>
-
-                  {/*Temporada*/}
-                  <Sidebar.Collapse label="Temporada">
-                    <Sidebar.Item>
-                      <div className="mt-4">
-                        <Label className="block mb-2">Temporada</Label>
-                        <div className="flex flex-col space-y-2">
-                          {/* Renderizar las temporadas como Checkboxes */}
-                          {temporadas.map((temporada) => (
-                            <div key={temporada.idTemporada} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`temporada-${temporada.idTemporada}`}
-                                checked={selectedSeasons.includes(temporada.idTemporada)} // Verificar si está seleccionada
-                                onChange={() => handleSeasonChange(temporada.idTemporada)} // Actualizar estado al cambiar selección
-                              />
-                              <Label htmlFor={`temporada-${temporada.idTemporada}`}>
-                                {temporada.nombre}
-                              </Label>
-                            </div>
-                          ))}
-
-                          {/* Botón para limpiar la selección (opcional) */}
-                          <button
-                            onClick={() => {
-                              setSelectedSeasons([]); // Limpiar selección de temporadas
-                              setFilters(prev => ({ ...prev, temporada: '' })); // Restablecer filtro
-                            }}
-                            className="text-blue-500 mt-2"
-                          >
-                            Limpiar selección
-                          </button>
-                        </div>
-                      </div>
-                    </Sidebar.Item>
-                  </Sidebar.Collapse>
-
-                  {/*Tallas*/}
-                  <Sidebar.Collapse label="Tallas">
-                    <Sidebar.Item>
-                      <div className="mt-4">
-                        <Label className="block mb-2">Talla</Label>
-                        <div className="flex flex-col space-y-2">
-                          {/* Renderizar las tallas como Radio Buttons */}
-                          {tallas.map((talla) => (
-                            <div key={talla.idTalla} className="flex items-center space-x-2">
-                              <Radio
-                                id={`talla-${talla.idTalla}`}
-                                name="talla"
-                                value={talla.idTalla}
-                                checked={filters.talla === String(talla.idTalla)}  // Verificar si está seleccionada
-                                onChange={handleFilterChange}  // Actualizar estado al cambiar selección
-                              />
-                              <Label htmlFor={`talla-${talla.idTalla}`}>
-                                {talla.talla}
-                              </Label>
-                            </div>
-                          ))}
-
-                          {/* Botón para limpiar la selección de tallas */}
-                          <button
-                            onClick={() => setFilters({ talla: '' })}
-                            className="text-blue-500 mt-2"
-                          >
-                            Limpiar selección
-                          </button>
-                        </div>
-                      </div>
-                    </Sidebar.Item>
-                  </Sidebar.Collapse>
-
-                  {/*Precio Min*/}
-                  <Sidebar.Item>
-                    <div>
-                      <div className="mt-4">
-                        <Label className="block mb-2">Precio Mínimo: ${filters.precioMin}</Label>
-                        <RangeSlider
-                          id="precioMin"
-                          min={0}
-                          max={1000}
-                          step={10}
-                          value={filters.precioMin}
-                          onChange={(e) => handlePriceChange(Number(e.target.value), 'precioMin')}
-                        />
-                      </div>
-                    </div>
-                  </Sidebar.Item>
-
-                  {/*Precio Max*/}
-                  <Sidebar.Item>
-                    <div className="mt-4">
-                      <Label className="block mb-2">Precio Máximo: ${filters.precioMax}</Label>
-                      <RangeSlider
-                        id="precioMax"
-                        min={filters.precioMin}  // Asegura que el valor máximo sea mayor que el mínimo
-                        max={1000}
-                        step={10}
-                        value={filters.precioMax}
-                        disabled={filters.precioMin > filters.precioMax} // Deshabilitar si el mínimo es mayor que el máximo
-                        onChange={(e) => handlePriceChange(Number(e.target.value), 'precioMax')}
-                      />
-                    </div>
-                    <button
-                      onClick={() => setFilters({ precioMin: 0, precioMax: 1000 })}
-                      className="text-blue-500 mt-4"
-                    >
-                      Restablecer Precios
-                    </button>
-                  </Sidebar.Item>
-
-                  {/*Tiendas*/}
-                  <Sidebar.Collapse label="Tiendas">
-                    <Sidebar.Item>
-                      <div className="mt-4">
-                        <label className="block mb-2">Tienda</label>
-                        <div className="flex flex-col space-y-2">
-                          {/* Renderizar las tiendas como Checkboxes */}
-                          {Tiendas.map((tienda) => (
-                            <div key={tienda.idUsuario} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`tienda-${tienda.idUsuario}`}
-                                checked={selectedStores.includes(tienda.idUsuario)} // Verificar si está seleccionada
-                                onChange={() => handleStoreChange(tienda.idUsuario)} // Actualizar estado al cambiar selección
-                              />
-                              <Label htmlFor={`tienda-${tienda.idUsuario}`}>
-                                {tienda.nombre}
-                              </Label>
-                            </div>
-                          ))}
-
-                          {/* Botón para limpiar la selección (opcional) */}
-                          <button
-                            onClick={() => {
-                              setSelectedStores([]); // Limpiar selección de tiendas
-                              setFilters(prev => ({ ...prev, tienda: '' })); // Restablecer filtro
-                            }}
-                            className="text-blue-500 mt-2"
-                          >
-                            Limpiar selección
-                          </button>
-                        </div>
-                      </div>
-                    </Sidebar.Item>
-                  </Sidebar.Collapse>
-                </Sidebar.ItemGroup>
-
-              </Sidebar.Items>
-              {/* Botón para aplicar filtros */}
-              <button
-                onClick={handleApplyFilters}
-                className="bg-custom text-black py-2 mt-4 rounded hover:bg-second w-full"
-              >
-                Aplicar Filtros
-              </button>
-            </Sidebar>
-          </div>
-
-
-          {/* Productos a la derecha */}
-          <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 w-3/4">
+      {/* Tabs con contenido específico */}
+      <Tabs aria-label="Default tabs" variant="default" className="flex-grow">
+        <Tabs.Item active title="Todos los productos">
+          <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
             {currentProducts.map((producto) => (
-              <div key={producto.idProducto} className="product border p-4 rounded shadow-lg text-center">
+              <div
+                key={producto.idProducto}
+                className="product border p-4 rounded shadow-lg text-center"
+              >
                 <img
                   src={`http://localhost:3001/images/${producto.primera_foto}`}
                   alt="Producto"
                   className="w-64 h-64 object-cover mx-auto mb-6"
                 />
                 <Link to={`/detalleproducto/${producto.idProducto}`}>
-                  <h2 className="text-xl font-semibold mb-2">{producto.producto}</h2>
+                  <h2 className="text-xl font-semibold mb-2">
+                    {producto.producto}
+                  </h2>
                 </Link>
-                <p className="text-lg mb-4">${producto.precioConDescuento != 0 ? producto.precioConDescuento.toFixed(2) : producto.precio.toFixed(2)}</p>
+                <p className="text-lg mb-4">
+                  $
+                  {producto.precioConDescuento !== 0
+                    ? producto.precioConDescuento.toFixed(2)
+                    : producto.precio.toFixed(2)}
+                </p>
 
-                {/** BOTONES */}
-                <div className="flex flex-row items-center">
-                  <div>
-                    <button
-                      className="p-1 m-1 bg-custom hover:bg-second"
-                      onClick={() => agregarAlCarrito (producto)}
-                    >
-                      Agregar al carrito
-                    </button>
-                  </div>
-                  <div className="">
-                    <Link to="/resumencompra">
-                    <button
-                      className="p-5 m-1 bg-custom hover:bg-second"
-                    >
+                <div className="flex flex-row items-center justify-between">
+                  <button
+                    className="p-1 m-1 bg-custom hover:bg-second"
+                    onClick={() => agregarAlCarrito(producto)}
+                  >
+                    Agregar al carrito
+                  </button>
+                  <Link to="/resumencompra">
+                    <button className="p-5 m-1 bg-custom hover:bg-second">
                       Comprar
                     </button>
-                    </Link>
-                    
-                  </div>
+                  </Link>
                   <button
-  onClick={() => handleFavorite(producto.idProducto)}
-  className={`p-2 rounded flex items-center justify-center ${
-    favoritos.some(favorito => favorito.id === producto.idProducto) ? 'text-red-500' : 'text-gray-300'
-  }`}
-  style={{ width: '40px', height: '40px' }}
->
-  <svg
-    className={`w-[24px] h-[24px] ${
-      favoritos.some(favorito => favorito.id === producto.idProducto) ? 'text-red-500' : 'text-gray-800 dark:text-white'
-    }`}
-    xmlns="http://www.w3.org/2000/svg"
-    fill="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
-  </svg>
-</button>
+                    onClick={() => handleFavorite(producto.idProducto)}
+                    className={`p-2 rounded flex items-center justify-center ${
+                      favoritos.some(
+                        (favorito) => favorito.id === producto.idProducto
+                      )
+                        ? "text-red-500"
+                        : "text-gray-300"
+                    }`}
+                    style={{ width: "40px", height: "40px" }}
+                  >
+                    <svg
+                      className={`w-[24px] h-[24px] ${
+                        favoritos.some(
+                          (favorito) => favorito.id === producto.idProducto
+                        )
+                          ? "text-red-500"
+                          : "text-gray-800 dark:text-white"
+                      }`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
+                    </svg>
+                  </button>
                 </div>
+                <span className="text-xl mb-2">
+                  Vendido por: {producto.nombre_usuario}
+                  </span>
               </div>
             ))}
           </div>
-        </div>
+        </Tabs.Item>
 
-        {/* Componente de paginación de Flowbite */}
-        <div className="text-center mt-8">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(filteredProducts.length / productsPerPage)}
-            onPageChange={onPageChange}
-            className="flex justify-center"
-          />
-        </div>
+        <Tabs.Item title="Ofertas">
+        <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+            {currentProducts.map((producto) => (
+              <div
+                key={producto.idProducto}
+                className="product border p-4 rounded shadow-lg text-center"
+              >
+                <img
+                  src={`http://localhost:3001/images/${producto.primera_foto}`}
+                  alt="Producto"
+                  className="w-64 h-64 object-cover mx-auto mb-6"
+                />
+                <Link to={`/detalleproducto/${producto.idProducto}`}>
+                  <h2 className="text-xl font-semibold mb-2">
+                    {producto.producto}
+                  </h2>
+                </Link>
+                <p className="text-lg mb-4">
+                  $
+                  {producto.precioConDescuento !== 0
+                    ? producto.precioConDescuento.toFixed(2)
+                    : producto.precio.toFixed(2)}
+                </p>
+
+                <div className="flex flex-row items-center justify-between">
+                  <button
+                    className="p-1 m-1 bg-custom hover:bg-second"
+                    onClick={() => agregarAlCarrito(producto)}
+                  >
+                    Agregar al carrito
+                  </button>
+                  <Link to="/resumencompra">
+                    <button className="p-5 m-1 bg-custom hover:bg-second">
+                      Comprar
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleFavorite(producto.idProducto)}
+                    className={`p-2 rounded flex items-center justify-center ${
+                      favoritos.some(
+                        (favorito) => favorito.id === producto.idProducto
+                      )
+                        ? "text-red-500"
+                        : "text-gray-300"
+                    }`}
+                    style={{ width: "40px", height: "40px" }}
+                  >
+                    <svg
+                      className={`w-[24px] h-[24px] ${
+                        favoritos.some(
+                          (favorito) => favorito.id === producto.idProducto
+                        )
+                          ? "text-red-500"
+                          : "text-gray-800 dark:text-white"
+                      }`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
+                    </svg>
+                  </button>                  
+                </div>
+                <h2 className="text-xl font-semibold mb-2">
+                    {producto.nombre_usuario}
+                  </h2>
+              </div>
+            ))}
+          </div>
+        </Tabs.Item>
+      </Tabs>
+
+      {/* Componente de paginación */}
+      <div className="text-center mt-8">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredProducts.length / productsPerPage)}
+          onPageChange={onPageChange}
+          className="flex justify-center"
+        />
       </div>
-      <Footer />
-    </section>
+    </div>
+  </div>
+
+  {/* Footer al final */}
+  <Footer className="mt-auto" />
+</div>
   );
 }
 

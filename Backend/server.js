@@ -646,7 +646,7 @@ app.get('/all-ofertas', (req, res) => {
 //Pedro PRODUCTOS
 // Obtener todos los productos
 app.get('/productos', (req, res) => {
-  const query = 'SELECT *, SUBSTRING_INDEX(producto.foto, \',\', 1) AS primera_foto FROM producto';
+  const query = 'SELECT   producto.*, usuario.nombre AS nombre_usuario, SUBSTRING_INDEX(producto.foto, \',\', 1) AS primera_foto FROM producto JOIN usuario ON producto.idUsuario = usuario.idUsuario';
   connection.query(query, (error, results) => {
     if (error) {
       res.status(500).json({ message: error.message });
