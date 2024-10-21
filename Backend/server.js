@@ -1842,7 +1842,7 @@ app.get('/cuponesvigentes/:idUsuario', (req, res) => {
     SELECT * 
     FROM cupones 
     JOIN cuponxusuario ON cupones.idCupon = cuponxusuario.idCupon
-    WHERE cuponxusuario.idUsuario = ?`, 
+    WHERE cuponxusuario.idUsuario = ?  AND usado = 0`, 
     [idUsuario], // Uso de ? para proteger contra inyección SQL
     (error, results) => {
       if (error) {
