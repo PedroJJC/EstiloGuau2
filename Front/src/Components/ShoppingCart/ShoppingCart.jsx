@@ -1,8 +1,11 @@
 import { Drawer } from "flowbite-react";
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { CartContext } from '../../Context/CartContext';
 
-export default function ShoppingCart({ isOpen, setIsOpen,  carrito = [], eliminarDelCarrito, agregarAlCarrito, vaciarCarrito, disminuirCantidad }) {
+export default function ShoppingCart({ isOpen, setIsOpen}) {
+  const { carrito, agregarAlCarrito, eliminarDelCarrito, vaciarCarrito, disminuirCantidad } = useContext(CartContext);
   const handleClose = () => setIsOpen(false);
+  console.log(carrito)
   return (
     <Drawer
       open={isOpen}
@@ -29,7 +32,7 @@ export default function ShoppingCart({ isOpen, setIsOpen,  carrito = [], elimina
         <div className="flex-grow ml-4">
             <h2 className="font-semibold text-base text-left">{producto.producto}</h2>
             <p className="text-sm text-gray-500 text-left">Size: Large</p>
-            <p className="font-bold text-left">${producto.precio.toFixed(2)}</p>
+            <p className="font-bold text-left">${producto.precioConDescuento != 0 ? (producto.precioConDescuento * producto.cantidad).toFixed(2) : (producto.precio * producto.cantidad).toFixed(2)}</p>
         </div>
         <div className="flex items-center">
             <button 
