@@ -9,11 +9,41 @@ const DetalleProducto = () => {
   const [producto, setProducto] = useState({
     sku: '',
     Marca: '',
-    precio: '',
+    precio: Float32Array,
     idTalla: '',
     descripcion: '',
-    foto: ''
+    foto: '',
+    porcentaje_descuento: Float32Array,
+    precioConDescuento: Float32Array
   });
+  const [carrito, setCarrito] = useState(() => {
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
+    return carritoGuardado || [];
+  });
+
+  // Guardar el carrito en localStorage cada vez que cambie
+  useEffect(() => {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+  }, [carrito]);
+
+  // Función para agregar productos al carrito
+  const agregarAlCarrito = (producto) => {
+    setCarrito((prevCarrito) => {
+      const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
+
+      if (productoExistente) {
+        // Si el producto ya existe, aumentar su cantidad
+        return prevCarrito.map((item) =>
+          item.idProducto === producto.idProducto
+            ? { ...item, cantidad: item.cantidad + 1 }
+            : item
+        );
+      } else {
+        // Si no existe, agregarlo con cantidad 1
+        return [...prevCarrito, { ...producto, cantidad: 1 }];
+      }
+    });
+  };
 
   const { idProducto } = useParams();
   const fotos = producto.foto.split(",");
@@ -40,7 +70,18 @@ const DetalleProducto = () => {
     const obtenerProducto = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/productos/${idProducto}`);
-        setProducto(response.data);
+        const producto = response.data;
+
+    // Suponiendo que el producto tiene un campo `precio` y `porcentaje_descuento`
+      if (producto.porcentaje_descuento != 0) {
+        const descuento = (producto.precio * producto.porcentaje_descuento) / 100;
+        const precioConDescuento = producto.precio - descuento;
+        producto.precioConDescuento = precioConDescuento;
+      } else {
+        // Si el porcentaje de descuento es 0, el precio con descuento es 0
+        producto.precioConDescuento = 0;
+      }
+        setProducto(producto);
         setSelectedImage(response.data.foto.split(',')[0]); 
         setCargando(false);
       } catch (error) {
@@ -182,12 +223,12 @@ const DetalleProducto = () => {
               />
             </div>
           </div>
-          <p className="font-roboto text-start text-2xl new-price text-green-500 my-4">${producto.precio - (producto.precio * 0.5)}</p>
+          <p className="font-roboto text-start text-2xl new-price text-green-500 my-4">${producto.precioConDescuento != 0 ? producto.precioConDescuento.toFixed(2) : producto.precio.toFixed(2)}</p>
           <div className="flex items-start">
             <button className="mr-6 add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second">
               Comprar
             </button>
-            <button className="add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second">
+            <button className="add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second" onClick={() => agregarAlCarrito (producto)}>
               Agregar al carrito
             </button>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { CartContext } from '../../Context/CartContext';
 import { UserContext } from '../../Context/UserContext';
 import Navbar from "../../Components/Navbar/Navbar";
 import { Link } from 'react-router-dom';
@@ -10,6 +11,7 @@ import axios from 'axios';
 
 function Tienda() {
   const { userData } = useContext(UserContext);
+  //const { agregarAlCarrito } = useContext(CartContext);
   const { idUsuario } = userData; 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -78,19 +80,37 @@ function Tienda() {
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:3001/productos'); // Reemplaza con tu URL de API
-        const data = await response.json();
-        setProducts(data);
-        //console.log(data)
-        setFilteredProducts(data);
-
-        // Cargar marcas únicas y ordenarlas alfabéticamente
-        const uniqueBrands = [...new Set(data.map(product => product.Marca))].sort();
-        setBrands(uniqueBrands);  // Guardar las marcas en el estado, ordenadas alfabéticamente
+          const response = await fetch('http://localhost:3001/productos'); // Reemplaza con tu URL de API
+          const data = await response.json();
+  
+          // Actualizar el estado con los productos y agregar el precio con descuento si aplica
+          const updatedData = data.map(product => {
+              // Suponiendo que 'descuento' es el campo que contiene el porcentaje de descuento
+              if (product.porcentaje_descuento != 0) {
+                  const precioConDescuento = product.precio * (1 - product.porcentaje_descuento / 100); // Calcular el precio con descuento
+                  return {
+                      ...product,
+                      precioConDescuento, // Agregar el nuevo campo
+                  };
+              }
+              return {
+                  ...product,
+                  precioConDescuento: 0 // Agregar el campo, sin descuento
+              };
+          });
+  
+          setProducts(updatedData); // Actualiza el estado con los productos modificados
+          setFilteredProducts(updatedData); // También actualiza los productos filtrados
+          console.log(updatedData); // Muestra los productos actualizados en la consola
+  
+          // Cargar marcas únicas y ordenarlas alfabéticamente
+          const uniqueBrands = [...new Set(updatedData.map(product => product.Marca))].sort();
+          setBrands(uniqueBrands); // Guardar las marcas en el estado, ordenadas alfabéticamente
       } catch (error) {
-        console.error('Error fetching products:', error);
+          console.error('Error fetching products:', error);
       }
-    };
+  };
+  
 
     const fetchFilters = async () => {
       try {
@@ -285,7 +305,7 @@ useEffect(() => {
     if (idUsuario) {
       try {
         const response = await axios.get(`http://localhost:3001/favoritos/${idUsuario}`);
-        const favoritos = response.data.map(fav => fav.idProducto);
+        const favoritos = response.updatedData.map(fav => fav.idProducto);
         setFavorites(favoritos);
       } catch (error) {
         console.error('Error al obtener los favoritos:', error);
@@ -295,67 +315,39 @@ useEffect(() => {
 
   fetchFavorites();
 }, [idUsuario]);
-
-
 const [carrito, setCarrito] = useState(() => {
-  // Cargar el carrito desde localStorage al iniciar
   const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
   return carritoGuardado || [];
 });
 
-    // Guardar el carrito en localStorage
-    useEffect(() => {
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-    }, [carrito]);
+// Guardar el carrito en localStorage cada vez que cambie
+useEffect(() => {
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+}, [carrito]);
 
-    const agregarAlCarrito = (producto) => {
-        setCarrito((prevCarrito) => {
-            const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
+// Función para agregar productos al carrito
+const agregarAlCarrito = (producto) => {
+  setCarrito((prevCarrito) => {
+    const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
 
-            if (productoExistente) {
-                // Si el producto ya existe, aumentar su cantidad
-                return prevCarrito.map((item) =>
-                    item.idProducto === producto.idProducto
-                        ? { ...item, cantidad: item.cantidad + 1 }
-                        : item
-                );
-            } else {
-                // Si no existe, agregarlo con cantidad 1
-                return [...prevCarrito, { ...producto, cantidad: 1 }];
-            }
-        });
-    };
-
-    const eliminarDelCarrito = (idProducto) => {
-        setCarrito((prevCarrito) => prevCarrito.filter((producto) => producto.idProducto !== idProducto));
-    };
-
-    const vaciarCarrito = () => {
-        setCarrito([]);
-    };
-
-    const disminuirCantidad = (idProducto) => {
-        setCarrito((prevCarrito) => {
-            const productoExistente = prevCarrito.find((item) => item.idProducto === idProducto);
-            if (!productoExistente) return prevCarrito;
-
-            if (productoExistente.cantidad === 1) {
-                // Si la cantidad es 1, eliminar el producto
-                return prevCarrito.filter((item) => item.idProducto !== idProducto);
-            }
-
-            return prevCarrito.map((item) =>
-                item.idProducto === idProducto
-                    ? { ...item, cantidad: item.cantidad - 1 }
-                    : item
-            );
-        });
-    };
+    if (productoExistente) {
+      // Si el producto ya existe, aumentar su cantidad
+      return prevCarrito.map((item) =>
+        item.idProducto === producto.idProducto
+          ? { ...item, cantidad: item.cantidad + 1 }
+          : item
+      );
+    } else {
+      // Si no existe, agregarlo con cantidad 1
+      return [...prevCarrito, { ...producto, cantidad: 1 }];
+    }
+  });
+};
 
   return (
     <section>
       <div className="w-full pt-10 Store flex flex-col items-center min-h-screen">
-        <Navbar carrito={carrito} eliminarDelCarrito={eliminarDelCarrito} agregarAlCarrito={agregarAlCarrito} vaciarCarrito={vaciarCarrito} disminuirCantidad={disminuirCantidad}/>
+        <Navbar/>
         <header className="w-full">
           <div className="flex justify-between items-center p-4">
           </div>
@@ -586,14 +578,14 @@ const [carrito, setCarrito] = useState(() => {
                 <Link to={`/detalleproducto/${producto.idProducto}`}>
                   <h2 className="text-xl font-semibold mb-2">{producto.producto}</h2>
                 </Link>
-                <p className="text-lg mb-4">${producto.precio.toFixed(2)}</p>
+                <p className="text-lg mb-4">${producto.precioConDescuento != 0 ? producto.precioConDescuento.toFixed(2) : producto.precio.toFixed(2)}</p>
 
                 {/** BOTONES */}
                 <div className="flex flex-row items-center">
                   <div>
                     <button
                       className="p-1 m-1 bg-custom hover:bg-second"
-                      onClick={() => agregarAlCarrito(producto)}
+                      onClick={() => agregarAlCarrito (producto)}
                     >
                       Agregar al carrito
                     </button>
