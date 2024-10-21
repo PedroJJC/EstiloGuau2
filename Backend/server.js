@@ -31,7 +31,7 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '12345',
+  password: '',
   database: 'bdestiloguau'
 });
 
@@ -646,7 +646,7 @@ app.get('/all-ofertas', (req, res) => {
 //Pedro PRODUCTOS
 // Obtener todos los productos
 app.get('/productos', (req, res) => {
-  const query = 'SELECT   producto.*, usuario.nombre AS nombre_usuario, SUBSTRING_INDEX(producto.foto, \',\', 1) AS primera_foto FROM producto JOIN usuario ON producto.idUsuario = usuario.idUsuario';
+  const query = 'SELECT p.*, SUBSTRING_INDEX(p.foto, \',\', 1) AS primera_foto,  o.oferta AS porcentaje_descuento FROM  producto p LEFT JOIN ofertas o ON p.idOferta = o.idOferta;';
   connection.query(query, (error, results) => {
     if (error) {
       res.status(500).json({ message: error.message });
@@ -674,7 +674,7 @@ app.get('/productosidus/:idUsuario', (req, res) => {
 
 // Obtener un producto por ID
 app.get('/productos/:id', (req, res) => {
-  const query = 'SELECT * FROM producto WHERE idProducto = ?';
+  const query = 'SELECT p.*, o.oferta AS porcentaje_descuento FROM producto p LEFT JOIN ofertas o ON p.idOferta = o.idOferta WHERE idProducto = ?';
   connection.query(query, [req.params.id], (error, results) => {
     if (error) {
       res.status(500).json({ message: error.message });
@@ -1437,7 +1437,7 @@ app.get('/suscripciones', (req, res) => {
 });
 
 // Ruta para agregar una nueva suscripción
-/* app.post('/suscripcion', (req, res) => {
+app.post('/suscripcion', (req, res) => {
   const { nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios } = req.body;
   // Validar que los campos necesarios estén presentes
   if (!nombre_sub || !descripcion_sub || !duracion_sub || !precio_sub || !beneficios) {
@@ -1454,31 +1454,7 @@ app.get('/suscripciones', (req, res) => {
       res.status(201).json({ message: 'Suscripción agregada con éxito' });
     }
   );
-}); */
-
-// Ruta para agregar una nueva suscripción
-app.post('/suscripcion', (req, res) => {
-  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios } = req.body;
-  const idRol = 2; // Reemplaza esto con el valor real que necesites
-
-  // Validar que los campos necesarios estén presentes
-  if (!nombre_sub || !descripcion_sub || !duracion_sub || !precio_sub || !beneficios) {
-    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
-  }
-
-  connection.query(
-    'INSERT INTO suscripcion (nombre_sub, descripcion_sub, duracion_sub, precio_sub, beneficios, idRol) VALUES (?, ?, ?, ?, ?, ?)',
-    [nombre_sub, descripcion_sub, duracion_sub, precio_sub, JSON.stringify(beneficios), idRol],
-    (err) => {
-      if (err) {
-        console.error('Error en la consulta:', err);
-        return res.status(500).json({ error: 'Error al agregar la suscripción. Intente nuevamente.' });
-      }
-      res.status(201).json({ message: 'Suscripción agregada con éxito' });
-    }
-  );
 });
-
 
 // Ruta para obtener una suscripción por ID
 app.get('/api/suscripcion/:id_sub', (req, res) => {
@@ -1678,7 +1654,9 @@ app.post('/registro-vendedor', (req, res) => {
 
 app.post('/registro-vendedor', (req, res) => {
   const { nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, id_sub } = req.body;
-  console.log(req.body);
+
+  console.log(req.body); // Verifica los datos recibidos
+
   // Obtén el idRol asociado a la suscripción
   const suscripcionQuery = 'SELECT idRol FROM suscripcion WHERE id_sub = ?';
   connection.query(suscripcionQuery, [id_sub], (err, results) => {
@@ -1692,7 +1670,7 @@ app.post('/registro-vendedor', (req, res) => {
     }
 
     const idRol = results[0].idRol;
-    const fechaRegistro = new Date();
+    const fechaRegistro = new Date(); // Nueva línea para obtener la fecha actual
 
     // Inserta el vendedor
     const insertQuery = 'INSERT INTO vendedor (nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, id_sub, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -1818,8 +1796,6 @@ app.put('/vendedor/:idVendedor', (req, res) => {
 });
 
 
-
-
 /* 
 app.post('/compras', async (req, res) => {
   // lógica para registrar la compra
@@ -1833,28 +1809,6 @@ app.post('/compras', async (req, res) => {
   }
 });
  */
-
-app.get('/cuponesvigentes/:idUsuario', (req, res) => {
-  const idUsuario = req.params.idUsuario;
-  console.log("Usuario ID recibido: ", idUsuario); // Agrega esto para verificar
-  
-  connection.query(`
-    SELECT * 
-    FROM cupones 
-    JOIN cuponxusuario ON cupones.idCupon = cuponxusuario.idCupon
-    WHERE cuponxusuario.idUsuario = ?  AND usado = 0`, 
-    [idUsuario], // Uso de ? para proteger contra inyección SQL
-    (error, results) => {
-      if (error) {
-          return res.status(500).json({ message: error.message });
-      }
-      console.log("Resultados de cupones: ", results); // Verifica aquí qué se devuelve
-      res.json(results); // Envío todos los resultados, no solo el primero
-  });
-});
-
-
-
 
 
 app.listen(3001, () => {
