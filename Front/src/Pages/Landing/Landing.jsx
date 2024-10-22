@@ -1,5 +1,4 @@
 import Navbar from '../../Components/Navbar/Navbar';
-import { CartProvider } from '../../Context/CartContext';
 import { Carrusel } from "../../Components/Carrusel/Carrusel";
 import Perritos from "../../img/Perritos.jpeg";
 import PerritoCapucha from "../../img/PerritoCapucha.jpg";

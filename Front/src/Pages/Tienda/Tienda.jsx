@@ -15,7 +15,7 @@ import { MdDashboard } from "react-icons/md";
 
 function Tienda() {
   const { userData } = useContext(UserContext);
-  //const { agregarAlCarrito } = useContext(CartContext);
+  const { agregarAlCarrito } = useContext(CartContext);
   const { idUsuario } = userData; 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -323,30 +323,6 @@ const [carrito, setCarrito] = useState(() => {
   const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
   return carritoGuardado || [];
 });
-
-// Guardar el carrito en localStorage cada vez que cambie
-useEffect(() => {
-  localStorage.setItem('carrito', JSON.stringify(carrito));
-}, [carrito]);
-
-// Función para agregar productos al carrito
-const agregarAlCarrito = (producto) => {
-  setCarrito((prevCarrito) => {
-    const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
-
-    if (productoExistente) {
-      // Si el producto ya existe, aumentar su cantidad
-      return prevCarrito.map((item) =>
-        item.idProducto === producto.idProducto
-          ? { ...item, cantidad: item.cantidad + 1 }
-          : item
-      );
-    } else {
-      // Si no existe, agregarlo con cantidad 1
-      return [...prevCarrito, { ...producto, cantidad: 1 }];
-    }
-  });
-};
 
   return (
 <div className="flex flex-col min-h-screen pt-28">

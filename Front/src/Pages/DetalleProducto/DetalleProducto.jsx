@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { CartContext } from '../../Context/CartContext';
 import Navbar from '../../Components/Navbar/Navbar';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -6,6 +7,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { UserContext } from '../../Context/UserContext';
 
 const DetalleProducto = () => {
+  const {agregarAlCarrito} = useContext(CartContext);
   const [producto, setProducto] = useState({
     sku: '',
     Marca: '',
@@ -16,34 +18,6 @@ const DetalleProducto = () => {
     porcentaje_descuento: Float32Array,
     precioConDescuento: Float32Array
   });
-  const [carrito, setCarrito] = useState(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
-    return carritoGuardado || [];
-  });
-
-  // Guardar el carrito en localStorage cada vez que cambie
-  useEffect(() => {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-  }, [carrito]);
-
-  // Función para agregar productos al carrito
-  const agregarAlCarrito = (producto) => {
-    setCarrito((prevCarrito) => {
-      const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
-
-      if (productoExistente) {
-        // Si el producto ya existe, aumentar su cantidad
-        return prevCarrito.map((item) =>
-          item.idProducto === producto.idProducto
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        );
-      } else {
-        // Si no existe, agregarlo con cantidad 1
-        return [...prevCarrito, { ...producto, cantidad: 1 }];
-      }
-    });
-  };
 
   const { idProducto } = useParams();
   const fotos = producto.foto.split(",");

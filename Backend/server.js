@@ -31,7 +31,7 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: '12345',
   database: 'bdestiloguau'
 });
 
@@ -646,7 +646,7 @@ app.get('/all-ofertas', (req, res) => {
 //Pedro PRODUCTOS
 // Obtener todos los productos
 app.get('/productos', (req, res) => {
-  const query = 'SELECT p.*, SUBSTRING_INDEX(p.foto, \',\', 1) AS primera_foto,  o.oferta AS porcentaje_descuento FROM  producto p LEFT JOIN ofertas o ON p.idOferta = o.idOferta;';
+  const query = 'SELECT p.*,  usuario.nombre AS nombre_usuario, SUBSTRING_INDEX(p.foto, \',\', 1) AS primera_foto,  o.oferta AS porcentaje_descuento FROM  producto p LEFT JOIN ofertas o ON p.idOferta = o.idOferta JOIN usuario ON p.idUsuario = usuario.idUsuario';
   connection.query(query, (error, results) => {
     if (error) {
       res.status(500).json({ message: error.message });
@@ -1809,6 +1809,20 @@ app.post('/compras', async (req, res) => {
   }
 });
  */
+
+app.get('/cuponesvigentes/:idUsuario', (req, res) => {
+  connection.query(`
+    SELECT * 
+    FROM cupones 
+    JOIN cuponxusuario ON cupones.idCupon = cuponxusuario.idCupon
+    WHERE cuponxusuario.idUsuario = ?`, 
+     [req.params.idUsuario], (error, results) => {
+      if (error) {
+          return res.status(500).json({ message: error.message });
+      }
+      res.json( results);
+  });
+});
 
 
 app.listen(3001, () => {
