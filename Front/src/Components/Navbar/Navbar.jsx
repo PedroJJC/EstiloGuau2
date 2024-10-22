@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { CartProvider } from '../../Context/CartContext';
 import { UserContext } from '../../Context/UserContext';
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/react/24/solid';
@@ -48,10 +49,12 @@ const Component = () => {
         {/* Botones visibles en pantallas medianas y mayores */}
         <div className="hidden md:flex items-center space-x-4">
           {/* Botón de carrito */}
+          <CartProvider>
           <button onClick={() => setIsCartOpen(true)} className={`h-9 w-9 ${isLandingPage ? "bg-black" : ""}`} aria-hidden="true">
             <ShoppingCartIcon className={`h-9 w-9 ${isLandingPage ? "text-white" : "text-red-500"}`} aria-hidden="true" />
           </button>
           <ShoppingCart isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
+          </CartProvider>
 
           {/* Enlace a la tienda */}
           <Link to="/Tienda">
