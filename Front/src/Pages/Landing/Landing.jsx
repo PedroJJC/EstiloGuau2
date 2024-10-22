@@ -1,5 +1,4 @@
 import Navbar from '../../Components/Navbar/Navbar';
-import { CartProvider } from '../../Context/CartContext';
 import { Carrusel } from "../../Components/Carrusel/Carrusel";
 import Perritos from "../../img/Perritos.jpeg";
 import PerritoCapucha from "../../img/PerritoCapucha.jpg";
@@ -63,7 +62,6 @@ function Landing() {
     <div className="landing-page">
       {/* Navbar Fijo */}
       <Navbar />
-
       {/* Contenedor Principal con Padding Superior Responsivo */}
       <main className="pt-24 transition-transform duration-700 ease-in-out"
         style={{ transform: `translateY(${translateY}px)` }}>

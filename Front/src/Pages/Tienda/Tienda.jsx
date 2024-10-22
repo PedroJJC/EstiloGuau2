@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { CartContext } from '../../Context/CartContext';
-import { UserContext } from '../../Context/UserContext';
 import Navbar from "../../Components/Navbar/Navbar";
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { CartProvider } from '../../Context/CartContext';
+import { UserContext } from '../../Context/UserContext';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../../Components/Footer/Footer';
 import { Pagination, Checkbox, Label, Radio, Sidebar, RangeSlider } from "flowbite-react";
 import axios from 'axios';
 import {Tabs  } from "flowbite-react";
 import { HiAdjustments, HiClipboardList, HiUserCircle } from "react-icons/hi";
 import { MdDashboard } from "react-icons/md";
+import ListProductos from '../../Components/ListTienda/ListProducts';
 
 
 
@@ -325,32 +325,12 @@ const [carrito, setCarrito] = useState(() => {
 });
 
 // Guardar el carrito en localStorage cada vez que cambie
-useEffect(() => {
-  localStorage.setItem('carrito', JSON.stringify(carrito));
-}, [carrito]);
-
-// Función para agregar productos al carrito
-const agregarAlCarrito = (producto) => {
-  setCarrito((prevCarrito) => {
-    const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
-
-    if (productoExistente) {
-      // Si el producto ya existe, aumentar su cantidad
-      return prevCarrito.map((item) =>
-        item.idProducto === producto.idProducto
-          ? { ...item, cantidad: item.cantidad + 1 }
-          : item
-      );
-    } else {
-      // Si no existe, agregarlo con cantidad 1
-      return [...prevCarrito, { ...producto, cantidad: 1 }];
-    }
-  });
-};
 
   return (
 <div className="flex flex-col min-h-screen pt-28">
+<CartProvider>
   <Navbar /> {/* Navbar arriba */}
+  </CartProvider>
   
   <div className="flex flex-1">
     {/* Sidebar de Filtros a la izquierda */}
@@ -511,195 +491,11 @@ const agregarAlCarrito = (producto) => {
         Aplicar Filtros
       </button>
     </Sidebar>
-
-
-    <div className="w-3/4 p-3 flex flex-col"> {/* Contenedor de productos y tabs */}
-      {/* Buscador siempre visible arriba */}
-      <div className="flex justify-end">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <svg
-              className="h-5 w-5 text-gray-200"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 18l6-6M4 10a6 6 0 1112 0 6 6 0 01-12 0z"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs con contenido específico */}
-      <Tabs aria-label="Default tabs" variant="default" className="flex-grow">
-        <Tabs.Item active title="Todos los productos">
-          <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-            {currentProducts.map((producto) => (
-              <div
-                key={producto.idProducto}
-                className="product border p-4 rounded shadow-lg text-center"
-              >
-                <img
-                  src={`http://localhost:3001/images/${producto.primera_foto}`}
-                  alt="Producto"
-                  className="w-64 h-64 object-cover mx-auto mb-6"
-                />
-                <Link to={`/detalleproducto/${producto.idProducto}`}>
-                  <h2 className="text-xl font-semibold mb-2">
-                    {producto.producto}
-                  </h2>
-                </Link>
-                <p className="text-lg mb-4">
-                  $
-                  {producto.precioConDescuento !== 0
-                    ? producto.precioConDescuento.toFixed(2)
-                    : producto.precio.toFixed(2)}
-                </p>
-
-                <div className="flex flex-row items-center justify-between">
-                  <button
-                    className="p-1 m-1 bg-custom hover:bg-second"
-                    onClick={() => agregarAlCarrito(producto)}
-                  >
-                    Agregar al carrito
-                  </button>
-                  <Link to="/resumencompra">
-                    <button className="p-5 m-1 bg-custom hover:bg-second">
-                      Comprar
-                    </button>
-                  </Link>
-                  <button
-                    onClick={() => handleFavorite(producto.idProducto)}
-                    className={`p-2 rounded flex items-center justify-center ${
-                      favoritos.some(
-                        (favorito) => favorito.id === producto.idProducto
-                      )
-                        ? "text-red-500"
-                        : "text-gray-300"
-                    }`}
-                    style={{ width: "40px", height: "40px" }}
-                  >
-                    <svg
-                      className={`w-[24px] h-[24px] ${
-                        favoritos.some(
-                          (favorito) => favorito.id === producto.idProducto
-                        )
-                          ? "text-red-500"
-                          : "text-gray-800 dark:text-white"
-                      }`}
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
-                    </svg>
-                  </button>
-                </div>
-                <span className="text-xl mb-2">
-                  Vendido por: {producto.nombre_usuario}
-                  </span>
-              </div>
-            ))}
-          </div>
-        </Tabs.Item>
-
-        <Tabs.Item title="Ofertas">
-        <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-            {currentProducts.map((producto) => (
-              <div
-                key={producto.idProducto}
-                className="product border p-4 rounded shadow-lg text-center"
-              >
-                <img
-                  src={`http://localhost:3001/images/${producto.primera_foto}`}
-                  alt="Producto"
-                  className="w-64 h-64 object-cover mx-auto mb-6"
-                />
-                <Link to={`/detalleproducto/${producto.idProducto}`}>
-                  <h2 className="text-xl font-semibold mb-2">
-                    {producto.producto}
-                  </h2>
-                </Link>
-                <p className="text-lg mb-4">
-                  $
-                  {producto.precioConDescuento !== 0
-                    ? producto.precioConDescuento.toFixed(2)
-                    : producto.precio.toFixed(2)}
-                </p>
-
-                <div className="flex flex-row items-center justify-between">
-                  <button
-                    className="p-1 m-1 bg-custom hover:bg-second"
-                    onClick={() => agregarAlCarrito(producto)}
-                  >
-                    Agregar al carrito
-                  </button>
-                  <Link to="/resumencompra">
-                    <button className="p-5 m-1 bg-custom hover:bg-second">
-                      Comprar
-                    </button>
-                  </Link>
-                  <button
-                    onClick={() => handleFavorite(producto.idProducto)}
-                    className={`p-2 rounded flex items-center justify-center ${
-                      favoritos.some(
-                        (favorito) => favorito.id === producto.idProducto
-                      )
-                        ? "text-red-500"
-                        : "text-gray-300"
-                    }`}
-                    style={{ width: "40px", height: "40px" }}
-                  >
-                    <svg
-                      className={`w-[24px] h-[24px] ${
-                        favoritos.some(
-                          (favorito) => favorito.id === producto.idProducto
-                        )
-                          ? "text-red-500"
-                          : "text-gray-800 dark:text-white"
-                      }`}
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
-                    </svg>
-                  </button>                  
-                </div>
-                <h2 className="text-xl font-semibold mb-2">
-                    {producto.nombre_usuario}
-                  </h2>
-              </div>
-            ))}
-          </div>
-        </Tabs.Item>
-      </Tabs>
-
-      {/* Componente de paginación */}
-      <div className="text-center mt-8">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(filteredProducts.length / productsPerPage)}
-          onPageChange={onPageChange}
-          className="flex justify-center"
-        />
-      </div>
-    </div>
+    <CartProvider>
+<ListProductos/>
+</CartProvider>
   </div>
 
-  {/* Footer al final */}
-  <Footer className="mt-auto" />
 </div>
   );
 }
