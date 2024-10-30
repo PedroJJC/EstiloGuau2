@@ -12,12 +12,15 @@ const Productos = () => {
   const [productos, setProductos] = useState([]);
   const { userData } = useContext(UserContext);
   const { idRol } = userData;
+  //console.log(idRol)
   const [currentPage, setCurrentPage] = useState(1);
   const [productosPerPage] = useState(5);
 
   useEffect(() => {
+   //  console.log('User Data:', userData.idVendedor); Verifica qué datos estás obteniendo
     if (idRol === 2) {
-      obtenerProductos(`/productosidus/${userData.idUsuario}}`);
+      console.log(`Obteniendo productos para el vendedor: ${userData.idVendedor}`);
+      obtenerProductos(`/productosidus/${userData.idVendedor}`);
     } else if (idRol === 3) {
       obtenerProductos(`/productos`);
     }
@@ -27,6 +30,7 @@ const Productos = () => {
     try {
       const response = await axios.get(`http://localhost:3001${ruta}`);
       setProductos(response.data);
+      console.log('Productos recibidos:', response.data);
       //console.log(productos)
     } catch (error) {
       console.error('Error al obtener los productos:', error);

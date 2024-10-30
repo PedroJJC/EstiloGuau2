@@ -7,7 +7,9 @@ export const UserProvider = ({ children }) => {
     idUsuario: null,
     idRol: null,
     nombre: null,
-    email: null   
+    email: null , 
+    apellido: null,
+    idVendedor: null
   });
 
   useEffect(() => {
@@ -17,8 +19,8 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
   
-  const setIdUsuarioYRol = (idUsuario, idRol, nombre, email) => {
-    const newUser = { idUsuario, idRol, nombre, email };
+  const setIdUsuarioYRol = (idUsuario, idRol, nombre, email, apellido, idVendedor) => {
+    const newUser = { idUsuario, idRol, nombre, email, apellido, idVendedor };
     setUserData(newUser);
     localStorage.setItem('userData', JSON.stringify(newUser));
   };
@@ -29,7 +31,9 @@ export const UserProvider = ({ children }) => {
       idUsuario: null,
       idRol: null, 
       nombre: null,
-      email: null   
+      email: null  ,
+      apellido:null, 
+      idVendedor :null
     });
     localStorage.removeItem('userData');
      localStorage.clear();

@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const multer = require('multer');
@@ -17,7 +17,6 @@ dotenv.config(); // Carga las variables de entorno
 const app = express();
 const port = process.env.PORT || 3001;
 
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -27,18 +26,24 @@ app.use('/api/payments', paymentsRoutes);
 // Middleware para parsear JSON
 app.use(bodyParser.json());
 
+let connection;
+
 // Conexión a la base de datos
-const connection = mysql.createConnection({
+async function initializeDBConnection() {
+  try {
+    connection = await mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '12345',
   database: 'bdestiloguau'
 });
-
-connection.connect(error => {
-  if (error) throw error;
-  console.log("MySQL database connection established successfully");
-});
+console.log('Conexión a la base de datos establecida');
+} catch (error) {
+console.error('Error al conectar con la base de datos:', error);
+process.exit(1); // Termina el proceso si no se puede conectar
+}
+}
+initializeDBConnection();
 
 // Configuración de Multer
 const storage = multer.diskStorage({  
@@ -69,25 +74,32 @@ app.get('/', (req, res) => {
 
 
 ///#Joel
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  const encodedPassword = Buffer.from(password).toString('base64'); // Decodificar la contraseña (si está codificada)
+  const encodedPassword = Buffer.from(password).toString('base64'); // Codificar la contraseña
 
-  const query = 'SELECT * FROM usuario WHERE email = ? AND password = ?';
-  connection.query(query, [email, encodedPassword], (error, results) => {
-    if (error) {
-      res.status(400).json({ message: error.message });
+  try {
+    const query = `
+      SELECT u.*, v.idVendedor 
+      FROM usuario u
+      LEFT JOIN vendedor v ON u.idUsuario = v.idUsuario 
+      WHERE u.email = ? AND u.password = ?`;
+    const [results] = await connection.query(query, [email, encodedPassword]); // Usar await para la consulta
+
+    if (results.length > 0) {
+      // Usuario autenticado correctamente
+      res.status(200).json({ message: 'Login exitoso', user: results[0] });
     } else {
-      if (results.length > 0) {
-        // Usuario autenticado correctamente
-        res.status(200).json({ message: 'Login exitoso', user: results[0] });
-      } else {
-        // Credenciales incorrectas
-        res.status(401).json({ message: 'Credenciales incorrectas' });
-      }
+      // Credenciales incorrectas
+      res.status(401).json({ message: 'Credenciales incorrectas' });
     }
-  });
+  } catch (error) {
+    console.error('Error al realizar la consulta:', error); // Log para el error
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
 });
+
+
 app.post('/registro', (req, res) => {
   const query = 'INSERT INTO usuario (idRol, nombre, apellido, email, password, fecha_creacion, foto) VALUES (?,?, ?, ?, ?, NOW(),?)';
   const { idRol = 1, nombre, apellido, email, password } = req.body;
@@ -561,15 +573,14 @@ app.delete('/permisos/:id', (req, res) => {
 
 //Pedro TALLAS
 // Obtener todas las tallas
-app.get('/tallas', (req, res) => {
+app.get('/tallas', async (req, res) => {
   const query = 'SELECT * FROM tallas';
-  connection.query(query, (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
+  try {
+    const [results] = await connection.execute(query);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Obtener una talla por ID
@@ -630,113 +641,110 @@ app.delete('/tallas/:id', (req, res) => {
 
 
 // Obtener todos las ofertas
-app.get('/all-ofertas', (req, res) => {
+// Ruta para obtener todas las ofertas
+app.get('/all-ofertas', async (req, res) => {
   const query = 'SELECT * FROM ofertas';
-  connection.query(query, (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
+  try {
+    const [results] = await connection.execute(query); // Cambiado a execute
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: error.message }); // Manejo de errores
+  }
 });
+
 
 
 
 //Pedro PRODUCTOS
 // Obtener todos los productos
-app.get('/productos', (req, res) => {
-  const query = 'SELECT p.*,  usuario.nombre AS nombre_usuario, SUBSTRING_INDEX(p.foto, \',\', 1) AS primera_foto,  o.oferta AS porcentaje_descuento FROM  producto p LEFT JOIN ofertas o ON p.idOferta = o.idOferta JOIN usuario ON p.idUsuario = usuario.idUsuario';
-  connection.query(query, (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
+app.get('/productos', async (req, res) => {
+  const query = 'SELECT p.*, vendedor.nom_empresa AS tienda, SUBSTRING_INDEX(p.foto, \',\', 1) AS primera_foto,  o.oferta AS porcentaje_descuento FROM  producto p LEFT JOIN ofertas o ON p.idOferta = o.idOferta LEFT JOIN vendedor ON p.idVendedor = vendedor.idVendedor';
+  try {
+    const [results] = await connection.execute(query);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Obtener todos los productos por idUs
-app.get('/productosidus/:idUsuario', (req, res) => {
-
-  const query = 'SELECT * FROM producto where idUsuario = ?';
-  connection.query(query, [req.params.idUsuario], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: 'Usuario no encontrado' });
-    } else {
-      res.json(results);
+// Ruta para obtener productos por idVendedor
+app.get('/productosidus/:idVendedor', async (req, res) => {
+  const query = 'SELECT * FROM producto WHERE idVendedor = ?';
+  console.log(`Consultando productos para idVendedor: ${req.params.idVendedor}`); // Log para verificar el idVendedor
+  try {
+    const [results] = await connection.execute(query, [req.params.idVendedor]);
+    if (results.length === 0) {
+      console.log('No se encontraron productos'); // Log si no hay resultados
+      return res.status(404).json({ message: 'Usuario no encontrado' });
     }
-  });
+    res.json(results);
+  } catch (error) {
+    console.error('Error en la consulta:', error); // Log de error
+    res.status(500).json({ message: error.message });
+  }
 });
 
 
+
 // Obtener un producto por ID
-app.get('/productos/:id', (req, res) => {
+app.get('/productos/:id', async (req, res) => {
   const query = 'SELECT p.*, o.oferta AS porcentaje_descuento FROM producto p LEFT JOIN ofertas o ON p.idOferta = o.idOferta WHERE idProducto = ?';
-  connection.query(query, [req.params.id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
+  try {
+    const [results] = await connection.execute(query, [req.params.id]);
+    if (results.length === 0) {
       res.status(404).json({ message: 'Producto no encontrado' });
     } else {
       res.json(results[0]);
     }
-  });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Obtener un producto por ID
-app.get('/detalleproducto/:id', (req, res) => {
+app.get('/detalleproducto/:id', async (req, res) => {
   const query = 'SELECT * FROM producto WHERE idProducto = ?';
-  connection.query(query, [req.params.id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
+
+  try {
+    const [results] = await connection.execute(query, [req.params.id]);
+    if (results.length === 0) {
       res.status(404).json({ message: 'Producto no encontrado' });
     } else {
       res.json(results[0]);
     }
-  });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
+
 
 
 //Agregar Producto
-app.post('/producto-nuevo', upload.array('foto',4), (req, res) => {
+app.post('/producto-nuevo', upload.array('foto', 4), async (req, res) => {
+  const { idVendedor, sku, producto, Marca, precio, idTemporada, descripcion, idOferta, fecha_ingreso, cantidad, idTalla } = req.body;
+  const fotos = req.files.map(file => file.filename); // Obtener los nombres de los archivos subidos
 
-  const {idUsuario, sku, Marca, producto, precio, idTalla, descripcion , idOferta,  fecha_ingreso,
-    cantidad, idTemporada} = req.body;
-  
-  let foto = ''; // Inicializa foto como cadena vacía
-  
-  /* Verifica la presencia de req.file para asignar el nombre del archivo
-  if (req.file) {
-    foto = req.file.filename;
-  }*/
+  // Convertir el array de fotos a un string JSON
+  const fotosString = JSON.stringify(fotos);
 
-     // Si hay archivos (fotos), genera una cadena separada por comas con los nombres de los archivos
-     if (req.files && req.files.length > 0) {
-      foto = req.files.map(file => file.filename).join(','); // Une los nombres de los archivos con comas
-    }
+  try {
+    // 1. Insertar en la tabla de productos
+    const queryProducto = 'INSERT INTO producto (idVendedor, sku, producto, Marca, precio, idTemporada, descripcion, foto, idOferta, fecha_ingreso) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const [resultProducto] = await connection.query(queryProducto, [idVendedor, sku, producto, Marca, precio, idTemporada, descripcion, fotosString, idOferta, fecha_ingreso]);
 
+    // 2. Insertar en la tabla de inventario
+    const queryInventario = 'INSERT INTO inventario (idProducto, idTalla, Existencias) VALUES (?, ?, ?)';
+    await connection.query(queryInventario, [resultProducto.insertId, idTalla, cantidad]);
 
-  // Verifica que todos los campos necesarios estén presentes antes de la inserción
-  if (producto && sku && Marca && precio && idTalla && descripcion && idUsuario &&  cantidad && idTemporada ) {
-    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta, fecha_ingreso,cantidad, idTemporada) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?,?,?)';
-    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario , idOferta ,  fecha_ingreso,cantidad, idTemporada], (error, results) => {
-
-      if (error) {
-        console.error( error);
-        res.status(400).json({ message: 'Error ', error });
-      } else {
-        const productId = results.insertId;
-        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta,  fecha_ingreso,cantidad , idTemporada});
-      }
-    });
-  } else {
-    res.status(400).json({ message: 'Todos los campos son requeridos' });
+    res.status(201).json({ message: 'Producto agregado correctamente', id: resultProducto.insertId });
+  } catch (error) {
+    console.error('Error al agregar el producto:', error);
+    res.status(500).json({ message: error.message });
   }
 });
+
+
 
 // Actualizar un producto
 app.put('/productos/:id', upload.array('foto',4), (req, res) => {
@@ -935,7 +943,7 @@ JOIN
 WHERE 
   YEAR(fecha_compra) = ? 
   AND MONTH(fecha_compra) = ? 
-  AND producto.idUsuario = ?
+  AND producto.idVendedor = ?
 GROUP BY 
   YEAR(fecha_compra), 
   MONTH(fecha_compra);
@@ -986,7 +994,7 @@ JOIN
   producto ON compra.idProducto = producto.idProducto
 WHERE 
   fecha_compra BETWEEN ? AND ?
-  AND producto.idUsuario = ?
+  AND producto.idVendedor = ?
 
   `;
 
@@ -1032,7 +1040,7 @@ JOIN
   producto ON compra.idProducto = producto.idProducto
 WHERE 
   fecha_compra = ?
-  AND producto.idUsuario = ?
+  AND producto.idVendedor = ?
   `;
 
   connection.query(query, [fechaHoy, req.params.idUsuario ], (error, results) => {
@@ -1145,7 +1153,7 @@ FROM
 JOIN 
     producto ON compra.idProducto = producto.idProducto
 WHERE 
-    producto.idUsuario = ?  
+    producto.idVendedor = ?  
     AND YEAR(compra.fecha_compra) = ?
     AND MONTH(compra.fecha_compra) = ?
 GROUP BY 
@@ -1357,21 +1365,22 @@ app.delete('/cupones/:id', (req, res) => {
 
 //Ofertas - Pedro
 //Obtener todos los ofertas
-app.get('/ofertas', (req, res) => {
+// Ruta para obtener todas las ofertas
+app.get('/ofertas', async (req, res) => {
   const query = 'SELECT * FROM ofertas';
-  connection.query(query, (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      // Convertir status numérico a texto
-      const mappedResults = results.map(oferta => ({
-        ...oferta,
-        status: oferta.status === 1 ? 'activo' : 'inactivo'
-      }));
-      res.json(mappedResults);
-    }
-  });
+  try {
+    const [results] = await connection.execute(query); // Usar execute para la consulta
+    // Convertir status numérico a texto
+    const mappedResults = results.map(oferta => ({
+      ...oferta,
+      status: oferta.status === 1 ? 'activo' : 'inactivo'
+    }));
+    res.json(mappedResults);
+  } catch (error) {
+    res.status(500).json({ message: error.message }); // Manejo de errores
+  }
 });
+
 
 // Agregar un nuevo cupón
 app.post('/ofertas-nuevo', (req, res) => {
@@ -1519,22 +1528,24 @@ app.post('/comprar-suscripcion', (req, res) => {
 //Termino el backend para las suscripciones
 
 // Ruta para obtener las temporadas
-app.get('/temporada', (req, res) => {
-  connection.query('SELECT * FROM temporada', (err, results) => {
-    if (err) return res.status(500).json({ error: err });
+app.get('/temporada', async (req, res) => {
+  try {
+    const [results] = await connection.execute('SELECT * FROM temporada'); // Cambiado a execute
     res.json(results);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message }); // Manejo de errores
+  }
 });
 
-app.get('/usuariogetidrol', (req, res) => {
-  const query = 'SELECT * FROM usuario where idRol = 3';
-  connection.query(query, (error, results) => {
-    if (error) {
-      res.status(500).json({ message: 'nop' });
-    } else {
-      res.json(results);
-    }
-  });
+// Ruta para obtener usuarios con rol específico
+app.get('/usuariogetidrol', async (req, res) => { // Agregando async aquí
+  const query = 'SELECT * FROM usuario WHERE idRol = 3';
+  try {
+    const [results] = await connection.execute(query); // Cambiado a execute
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los usuarios', error: error.message }); // Manejo de errores
+  }
 });
 
 // Endpoint para guardar un producto en la tabla
@@ -1582,36 +1593,41 @@ app.delete('/favoritosdelete/:idUsuario/:idProducto', (req, res) => {
 
 
 // Obtener comentarios por ID de producto
-app.get('/comentarios/:idProducto', (req, res) => {
+app.get('/comentarios/:idProducto', async (req, res) => {
   const query = `
     SELECT c.*, u.nombre, u.email 
     FROM comentarios c 
     JOIN usuario u ON c.idUsuario = u.idUsuario 
     WHERE c.idProducto = ?`;
-  
-  connection.query(query, [req.params.idProducto], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
+
+  try {
+    const [results] = await connection.execute(query, [req.params.idProducto]);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
+
 
 
 // Agregar un comentario
-app.post('/comentarios', (req, res) => {
+app.post('/comentarios', async  (req, res) => {
   const { idUsuario, idProducto, comentario, valoracion } = req.body;
   const query = 'INSERT INTO comentarios (idUsuario, idProducto, comentario, fecha, valoracion) VALUES (?, ?, ?, NOW(), ?)';
-  connection.query(query, [idUsuario, idProducto, comentario, valoracion], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json({ idComentario: results.insertId, idUsuario, idProducto, comentario, fecha: new Date(), valoracion });
-    }
-  });
+  try {
+    const [results] = await connection.execute(query, [idUsuario, idProducto, comentario, valoracion]);
+    res.json({ 
+      idComentario: results.insertId, 
+      idUsuario, 
+      idProducto, 
+      comentario, 
+      fecha: new Date(), 
+      valoracion 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
-
 /* 
 app.post('/registro-vendedor', (req, res) => {
   const { nom_empresa, direccion, telefono, pais, estado, codigo_postal, rfc, idUsuario, idRol, idSuscripcion } = req.body;
@@ -1708,6 +1724,18 @@ app.get('/vendedor/:idUsuario', (req, res) => {
       return res.status(500).send('Error en el servidor');
     }
     res.send(results[0]);
+  });
+});
+app.get('/all-vendedor', (req, res) => {
+
+  const query = 'SELECT * FROM vendedor';
+  
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error al obtener el vendedor:', error);
+      return res.status(500).send('Error en el servidor');
+    }
+    res.send(results);
   });
 });
 
@@ -1823,6 +1851,35 @@ app.get('/cuponesvigentes/:idUsuario', (req, res) => {
       res.json( results);
   });
 });
+
+
+// Endpoint para obtener productos por cupón 
+app.get('/aplicar-cupon/:idVendedor', (req, res) => {
+  const { idVendedor } = req.params; // Extraer idVendedor de los parámetros de la ruta
+
+  const query = `
+      SELECT producto.*, cupones.idVendedor
+FROM cupones
+JOIN producto ON producto.idVendedor = cupones.idVendedor
+WHERE cupones.idVendedor = ?;
+  `;
+
+  connection.query(query, [idVendedor], (error, results) => {
+      if (error) {
+          console.error('Error en la consulta de productos:', error);
+          return res.status(500).send('Error en la consulta de productos');
+      }
+
+      if (results.length === 0) {
+          return res.status(404).send('Productos no encontrados');
+      }
+
+      res.json(results); // Devuelve los productos encontrados
+  });
+});
+
+
+
 
 
 app.listen(3001, () => {

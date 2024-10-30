@@ -86,7 +86,6 @@ function Tienda() {
       try {
           const response = await fetch('http://localhost:3001/productos'); // Reemplaza con tu URL de API
           const data = await response.json();
-  
           // Actualizar el estado con los productos y agregar el precio con descuento si aplica
           const updatedData = data.map(product => {
               // Suponiendo que 'descuento' es el campo que contiene el porcentaje de descuento
@@ -517,10 +516,7 @@ const [carrito, setCarrito] = useState(() => {
         </div>
       </div>
 
-      {/* Tabs con contenido específico */}
-      <Tabs aria-label="Default tabs" variant="default" className="flex-grow">
-        <Tabs.Item active title="Todos los productos">
-          <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+      <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
             {currentProducts.map((producto) => (
               <div
                 key={producto.idProducto}
@@ -543,12 +539,12 @@ const [carrito, setCarrito] = useState(() => {
                     : producto.precio.toFixed(2)}
                 </p>
 
-                <div className="flex flex-row items-center justify-between">
+                <div className="flex flex-row items-center justify-center">
                   <button
-                    className="p-1 m-1 bg-custom hover:bg-second"
+                    className="p-5  bg-custom hover:bg-second"
                     onClick={() => agregarAlCarrito(producto)}
                   >
-                    Agregar al carrito
+                    Agregar 
                   </button>
                   <Link to="/resumencompra">
                     <button className="p-5 m-1 bg-custom hover:bg-second">
@@ -583,84 +579,12 @@ const [carrito, setCarrito] = useState(() => {
                   </button>
                 </div>
                 <span className="text-xl mb-2">
-                  Vendido por: {producto.nombre_usuario}
+                  Vendido por: {producto.tienda}
                   </span>
               </div>
             ))}
           </div>
-        </Tabs.Item>
 
-        <Tabs.Item title="Ofertas">
-        <div className="products grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-            {currentProducts.map((producto) => (
-              <div
-                key={producto.idProducto}
-                className="product border p-4 rounded shadow-lg text-center"
-              >
-                <img
-                  src={`http://localhost:3001/images/${producto.primera_foto}`}
-                  alt="Producto"
-                  className="w-64 h-64 object-cover mx-auto mb-6"
-                />
-                <Link to={`/detalleproducto/${producto.idProducto}`}>
-                  <h2 className="text-xl font-semibold mb-2">
-                    {producto.producto}
-                  </h2>
-                </Link>
-                <p className="text-lg mb-4">
-                  $
-                  {producto.precioConDescuento !== 0
-                    ? producto.precioConDescuento.toFixed(2)
-                    : producto.precio.toFixed(2)}
-                </p>
-
-                <div className="flex flex-row items-center justify-between">
-                  <button
-                    className="p-1 m-1 bg-custom hover:bg-second"
-                    onClick={() => agregarAlCarrito(producto)}
-                  >
-                    Agregar al carrito
-                  </button>
-                  <Link to="/resumencompra">
-                    <button className="p-5 m-1 bg-custom hover:bg-second">
-                      Comprar
-                    </button>
-                  </Link>
-                  <button
-                    onClick={() => handleFavorite(producto.idProducto)}
-                    className={`p-2 rounded flex items-center justify-center ${
-                      favoritos.some(
-                        (favorito) => favorito.id === producto.idProducto
-                      )
-                        ? "text-red-500"
-                        : "text-gray-300"
-                    }`}
-                    style={{ width: "40px", height: "40px" }}
-                  >
-                    <svg
-                      className={`w-[24px] h-[24px] ${
-                        favoritos.some(
-                          (favorito) => favorito.id === producto.idProducto
-                        )
-                          ? "text-red-500"
-                          : "text-gray-800 dark:text-white"
-                      }`}
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
-                    </svg>
-                  </button>                  
-                </div>
-                <h2 className="text-xl font-semibold mb-2">
-                    {producto.nombre_usuario}
-                  </h2>
-              </div>
-            ))}
-          </div>
-        </Tabs.Item>
-      </Tabs>
 
       {/* Componente de paginación */}
       <div className="text-center mt-8">
