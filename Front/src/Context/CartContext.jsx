@@ -16,33 +16,40 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('carrito', JSON.stringify(carrito));
   }, [carrito]);
 
-  const agregarAlCarrito = (producto) => {
+  const agregarAlCarrito = (producto, talla,  cantidad, productosOferta, productosPrecios) => {
+    const nuevaCantidad = Number(producto.cantidad ?? 0) + 1;
+   
+  
     setCarrito((prevCarrito) => {
-      const productoExistente = prevCarrito.find((item) => item.idProducto === producto.idProducto);
+      
+      const productoExistente = prevCarrito.find(
+        (item) => item.idProducto === producto.idProducto && item.talla === talla && item.productosPrecios === productosPrecios && item.productosOferta === productosOferta
+      );
+      
 
       if (productoExistente) {
         // Si el producto ya existe, aumentar su cantidad
         return prevCarrito.map((item) =>
-          item.idProducto === producto.idProducto
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
+          item.idProducto === producto.idProducto && item.talla === talla
+        ? { ...item, cantidad: item.cantidad + 1 }
+        : item
         );
       } else {
         // Si no existe, agregarlo con cantidad 1
-        return [...prevCarrito, { ...producto, cantidad: 1 }];
+        return [...prevCarrito, { ...producto, talla: talla, cantidad: cantidad }];
       }
     });
   };
 
-  const eliminarDelCarrito = (idProducto) => {
-    setCarrito((prevCarrito) => prevCarrito.filter((producto) => producto.idProducto !== idProducto));
+  const eliminarDelCarrito = (idProducto, talla) => {
+    setCarrito((prevCarrito) => prevCarrito.filter((producto) => producto.idProducto !== idProducto  || producto.talla !== talla ));
   };
 
   const vaciarCarrito = () => {
     setCarrito([]);
   };
 
-  const disminuirCantidad = (idProducto) => {
+  const disminuirCantidad = (idProducto, talla) => {
     setCarrito((prevCarrito) => {
       const productoExistente = prevCarrito.find((item) => item.idProducto === idProducto);
       if (!productoExistente) return prevCarrito;
@@ -53,7 +60,7 @@ export const CartProvider = ({ children }) => {
       }
 
       return prevCarrito.map((item) =>
-        item.idProducto === idProducto
+        item.idProducto === idProducto && item.talla === talla
           ? { ...item, cantidad: item.cantidad - 1 }
           : item
       );

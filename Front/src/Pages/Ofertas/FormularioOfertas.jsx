@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { UserContext } from '../../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 const FormularioOferta = () => {
+  const { userData, setUserData } = useContext(UserContext);
 
   const [oferta, setOferta] = useState({
+    idUsuario: userData.idUsuario,
     oferta: '',
     descripcion: '',
     fechaRegistro: '',
@@ -55,7 +58,7 @@ const FormularioOferta = () => {
 
 
   return (
-    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
        <Navbar />
       <Sidebar/>
      
@@ -168,7 +171,10 @@ const FormularioOferta = () => {
   </div>
 </form>
         </div>
-        <Footer />
+        <div className="">
+          <Footer />
+        </div>
+        
       </div>
   );
 };

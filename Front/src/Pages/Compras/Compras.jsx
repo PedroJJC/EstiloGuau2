@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import Navbar from '../../Components/Navbar/Navbar';
 import Sidebar from '../../Components/Sidebar/Sidebar';
-import FooterAdmin from "../../Components/Footer/FooterAdmin";
+import Footer from "../../Components/Footer/Footer";
 import { UserContext } from '../../Context/UserContext';
 import { Pagination } from "flowbite-react";
 
@@ -82,15 +82,15 @@ const Compras = () => {
                               <th className="py-3 px-4 border border-gray-400">Cliente</th>
                           </tr>
                       </thead>
-                      <tbody className="border-collapse border border-gray-400">
+                      <tbody className="border-collapse border border-gray-400 text-center items-center">
                           {currentCompras.map((compra) => (
                               <tr key={compra.idCompra}>
-                                  <td className="py-1 px-2 border border-gray-300">{compra.idCompra}</td>
+                                  <td className="py-1 px-2 border border-gray-400">{compra.idCompra}</td>
                                   <td className="flex items-center py-1 px-2 border border-gray-300">
                                       <img src={`http://localhost:3001/images/${compra.primera_foto}`} alt="" className="h-20 p-3" />
                                       <div className="flex flex-col">
                                           <span>{compra.descripcion_producto}</span>
-                                          <span className="font-light">Talla: {compra.talla}</span>
+                                          <span className="font-light">Talla: {compra.nombre_talla}</span>
                                       </div>
                                   </td>
                                   <td className="py-3 px-4 border border-gray-400">{compra.precio}</td>
@@ -118,8 +118,12 @@ const Compras = () => {
                       className="flex justify-center"
                   />
               </div>
-              <FooterAdmin />
+             
+             
           </div>
+           <div className="">
+              <Footer/>
+              </div>
       </div>
   );
 };

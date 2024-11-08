@@ -96,9 +96,8 @@ const Suscripcion = () => {
   };
 
   return (
-    <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-24 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
       <Navbar />
-      <Sidebar />
       <h1 className="text-4xl text-center font-extrabold mb-10 mt-10 uppercase">SUSCRIPCIONES DISPONIBLES</h1>
   
       {error && <p className="text-red-500 text-center">{error}</p>}
@@ -138,13 +137,16 @@ const Suscripcion = () => {
         )}
       </div>
   
-      <Footer />
+      
   
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         subscription={selectedSubscription} 
       />
+      <div className="">
+      <Footer />
+      </div>
     </div>
   );  
 };

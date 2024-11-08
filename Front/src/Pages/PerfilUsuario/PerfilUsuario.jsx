@@ -4,7 +4,9 @@ import Navbar from "../../Components/Navbar/Navbar";
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../Context/UserContext';
 import { FiEdit } from "react-icons/fi";
-import { FaArrowRight } from 'react-icons/fa'; // Importa el icono de flecha
+import { FaArrowRight } from 'react-icons/fa';
+import Footer from "../../Components/Footer/Footer";
+
 
 const PerfilUsuario = () => {
   const { userData } = useContext(UserContext);
@@ -84,40 +86,51 @@ const PerfilUsuario = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
-      <div className="pt-28 px-10">
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg mb-8">
-          <h1 className="text-5xl font-bold text-white text-center">Bienvenido, {usuario.nombre}!</h1>
+      <div className="pt-32 px-56">
+        <div className="bg-gradient-to-r from-custom to-second  p-6 rounded-lg mb-8">
+          <h1 className="text-5xl font-bold text-black text-center">Bienvenido, {usuario.nombre}!</h1>
         </div>
-  
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-8 flex items-center">
-          <img src={`http://localhost:3001/images/${usuario.foto}`} alt="Usuario" className="rounded-full h-40 w-40 object-cover mr-6" />
-          <div className="flex-grow">
-            <h2 className="text-3xl font-bold">{usuario.nombre} {usuario.apellido}</h2>
-            <p className="text-lg">Email: {usuario.email}</p>
-            <p className="text-lg">Contraseña: {'*'.repeat(usuario.password.length)}</p>
-          </div>
-          <Link to={`/formUs`} className="ml-4">
-            <FiEdit className="h-10 w-10 text-black hover:text-custom cursor-pointer" />
-          </Link>
-        </div>
-  
-        <div className="grid grid-cols-3 gap-4 mb-8">
+
+        <div className=" bg-gray-100">
+  <div className="bg-white flex items-center justify-center w-full shadow-lg rounded-lg mb-8 ">
+   <div className="flex justify-center items-center">
+   <img src={`http://localhost:3001/images/${usuario.foto}`} alt=""
+      className="rounded-full h-auto w-64 object-cover mr-6" />
+    <div className="flex-grow p-20">
+      <h2 className="text-4xl font-bold">{usuario.nombre} {usuario.apellido}</h2>
+      <p className="text-2xl font-bold">Email: <span className="font-thin">{usuario.email}</span> </p>
+      <p className="text-2xl font-bold">Contraseña: <span className="font-thin">  {'*'.repeat(usuario.password.length)}</span></p>
+      <Link to={`/formUs`} className="ml-1 m-2">
+        <button className="px-4 py-2 bg-custom text-black font-semibold rounded-lg shadow-md hover:bg-second focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+          Editar perfil
+        </button>
+      </Link>
+    </div>
+   </div>
+    
+  </div>
+</div>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
           <div className="bg-white shadow-lg rounded-lg p-4 text-center">
             <h3 className="text-2xl font-bold">Compras Realizadas</h3>
             <p className="text-3xl">{compras.length}</p>
           </div>
-          <div className="bg-white shadow-lg rounded-lg p-4 text-center">
+          {/**
+           *  <div className="bg-white shadow-lg rounded-lg p-4 text-center">
             <h3 className="text-2xl font-bold">Suscripciones Activas</h3>
             <p className="text-3xl">{suscripcionesActivas}</p>
           </div>
+           */}
+         
           <div className="bg-white shadow-lg rounded-lg p-4 text-center">
             <h3 className="text-2xl font-bold">Tus Puntos por Compras</h3>
             <p className="text-3xl">{puntosFidelidad}</p>
           </div>
         </div>
-  
-        <h2 className="text-5xl font-semibold mb-4">Últimas Compras</h2>
-        <div 
+
+        <h2 className="text-5xl font-semibold mb-4">Historial de compras</h2>
+        <div
           className="relative"
           onMouseEnter={() => setShowButton(true)}
           onMouseLeave={() => setShowButton(false)}
@@ -128,10 +141,10 @@ const PerfilUsuario = () => {
                 <div key={compra.idCompra} className="bg-white shadow-lg rounded-lg p-4 flex flex-col">
                   <img src={`http://localhost:3001/images/${compra.foto}`} className="h-24 w-24 rounded-full mb-4 mx-auto" alt="Producto" />
                   <h3 className="font-bold">{compra.descripcion_producto}</h3>
-                  <p>Precio: ${compra.precio}</p>
+                  <p className='font-bold'>Precio: ${compra.precio}</p>
                   <p>Talla: {compra.talla}</p>
-                  <button 
-                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" 
+                  <button
+                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                     onClick={() => handleOpenModal(compra)}
                   >
                     Ver Detalles
@@ -169,8 +182,11 @@ const PerfilUsuario = () => {
           </div>
         )}
       </div>
+      <div className="">
+        <Footer />
+      </div>
     </div>
-  );  
+  );
 };
 
 export default PerfilUsuario;

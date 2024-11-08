@@ -3,7 +3,9 @@ import axios from 'axios';
 import Navbar from "../../Components/Navbar/Navbar";
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../Context/UserContext';
-import { FaArrowLeft } from 'react-icons/fa'; // Importa el ícono de flecha
+import { FaArrowLeft } from 'react-icons/fa'; 
+import Footer from "../../Components/Footer/Footer";
+
 
 export const FormUsuario = () => {
     const { userData } = useContext(UserContext);
@@ -74,7 +76,7 @@ export const FormUsuario = () => {
     };
 
     const handleCancel = () => {
-        navigate('/perfil-usuario');
+        navigate('/perfilUsuario');
     };
 
     return (
@@ -156,7 +158,7 @@ export const FormUsuario = () => {
                             <div className="flex flex-col mb-4">
                                 {currentImage && (
                                     <div className="flex flex-col justify-center items-center mb-4 text-center">
-                                        <img src={`http://localhost:3001/images/${currentImage}`} alt="usuario" className="rounded-full h-96 w-96 object-cover" />
+                                        <img src={`http://localhost:3001/images/${currentImage}`} alt="" className="rounded-full h-96 w-96 object-cover" />
                                         <button type="button" onClick={handleRemoveImage} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline m-4">
                                             Quitar foto
                                         </button>
@@ -189,6 +191,9 @@ export const FormUsuario = () => {
                     </div>
                 </div>
             </form>
+            <div className="">
+            <Footer/>
+            </div>
         </div>
     );
 };

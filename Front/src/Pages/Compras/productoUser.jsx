@@ -3,6 +3,7 @@ import Axios from 'axios';
 import Navbar from "../../Components/Navbar/Navbar";
 import { UserContext } from '../../Context/UserContext';
 import { Link } from 'react-router-dom';
+import Footer from "../../Components/Footer/Footer";
 import { FaArrowLeft } from 'react-icons/fa';
 
 const ProductoUser = () => {
@@ -82,6 +83,7 @@ const ProductoUser = () => {
           </div>
         </div>
       )}
+      <Footer/>
     </div>
   );
 };

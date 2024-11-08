@@ -1,11 +1,12 @@
 import Navbar from '../../Components/Navbar/Navbar';
 import { Carrusel } from "../../Components/Carrusel/Carrusel";
-import Perritos from "../../img/Perritos.jpeg";
+import Perritos from "../../img/Perritos.png";
 import PerritoCapucha from "../../img/PerritoCapucha.jpg";
-import FooterLanding from '../../Components/Footer/FooterLanding';
+import Footer from '../../Components/Footer/Footer';
 import { useEffect, useState } from 'react';
 import './Landing.css';
 import { HiArrowCircleDown,  HiArrowCircleUp } from "react-icons/hi";
+import { Link } from 'react-router-dom';
 
 function Landing() {
   const [translateY, setTranslateY] = useState(0);
@@ -70,13 +71,24 @@ function Landing() {
         {/* Sección de Imagen Principal */}
         <div className="main-image-section bg-black ">
           <div className="main-image flex justify-center">
-            <div className="bg-black w-full">
-              <img
-                className="object-cover w-full h-64 sm:h-64 md:h-80 lg:h-[700px] pt-10"
-                src={Perritos}
-                alt="Perritos"
-              />
-            </div>
+          <div className="relative w-full">
+          <div className="relative w-full">
+            <Link to="/tienda">
+            <button className="absolute bottom-56 left-1/2 transform -translate-x-1/2 z-10 button-landing">
+    <span className="button_top">Explorar productos</span>
+  </button>
+            </Link>
+ 
+
+  <div className="bg-black w-full">
+    <img
+      className="object-cover w-full h-64 sm:h-64 md:h-80 lg:h-[700px] pt-10"
+      src={Perritos}
+      alt="Perritos"
+    />
+  </div>
+</div>
+</div>
           </div>
         </div>
 
@@ -131,7 +143,7 @@ function Landing() {
 
 
       {/* Footer */}
-      <FooterLanding />
+      <Footer />
     </div>
   );
 }
