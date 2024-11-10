@@ -58,7 +58,7 @@ const RoutesComponent = () => {
         
         
         <Route path="/DetalleProducto/:idProducto" element={<DetalleProducto />} />
-        <Route path="/ResumenCompra/:idProducto/:talla/:cantidad/:productosOferta/:productosPrecios" element={<ResumenCompra />} />
+        <Route path="/ResumenCompra1/:idProducto/:talla/:cantidad/:productosOferta/:productosPrecios" element={<ResumenCompra />} />
         <Route path="/ResumenCompra" element={<ResumenCompra />} />
         {/* Rutas protegidas por rol */}
         <Route

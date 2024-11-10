@@ -689,7 +689,7 @@ app.get('/all-ofertas', async (req, res) => {
 //Pedro PRODUCTOS
 // Obtener todos los productos
 app.get('/productos', async (req, res) => {
-  const query = 'SELECT p.*, vendedor.nom_empresa AS tienda,  MIN(i.precio) AS precio, SUBSTRING_INDEX(p.foto, \',\', 1) AS primera_foto,MAX(o.oferta) AS porcentaje_descuento FROM  producto p LEFT JOIN  inventario i ON p.idProducto = i.idProducto  LEFT JOIN ofertas o ON i.idOferta = o.idOferta LEFT JOIN vendedor ON p.idVendedor = vendedor.idVendedor GROUP BY p.idProducto'
+  const query = 'SELECT p.*, vendedor.nom_empresa AS tienda,  MIN(i.precio) AS precio, SUBSTRING_INDEX(p.foto, \',\', 1) AS primera_foto,MAX(o.oferta) AS porcentaje_descuento,   GROUP_CONCAT(DISTINCT i.idTalla ORDER BY i.idTalla ASC) AS tallas_disponibles, GROUP_CONCAT(DISTINCT i.precio ORDER BY i.precio ASC) AS precios, GROUP_CONCAT(DISTINCT o.idOferta ORDER BY o.idOferta ASC) AS ofertas FROM  producto p LEFT JOIN  inventario i ON p.idProducto = i.idProducto  LEFT JOIN ofertas o ON i.idOferta = o.idOferta LEFT JOIN vendedor ON p.idVendedor = vendedor.idVendedor GROUP BY p.idProducto'
   try {
     const [results] = await connection.execute(query);
     res.json(results);

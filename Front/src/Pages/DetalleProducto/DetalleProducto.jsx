@@ -320,7 +320,7 @@ const DetalleProducto = () => {
   </p>
           <div className="flex items-start">
 
-        <Link  to={`/resumencompra/${producto.idProducto}/${tallaSeleccionada}/${cantidad}/${productosOferta}/${productosPrecios}`}>
+        <Link  to={`/resumencompra1/${producto.idProducto}/${tallaSeleccionada}/${cantidad}/${productosOferta}/${productosPrecios}`}>
           <button
             className={`mr-6 add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second `}          
           >
