@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 export default function ShoppingCart({ isOpen, setIsOpen }) {
   const { carrito, agregarAlCarrito, eliminarDelCarrito, vaciarCarrito, disminuirCantidad } = useContext(CartContext);
   const handleClose = () => setIsOpen(false);
-  console.log(carrito)
-  const subtotal = carrito.reduce((acc, producto) => acc + (Number(producto.precio) * Number(producto.cantidad)), 0);
-  const descuentoTotal = carrito.reduce((acc, producto) => acc + ((Number(producto.precio) * Number(producto.cantidad) * Number(producto.porcentaje_descuento)) / 100), 0);
+  const descuentoTotal = carrito.reduce((acc, producto) => acc + ((Number(producto.precioOriginal) * Number(producto.cantidad) * Number(producto.productosOferta)) / 100), 0);
+  const subtotal = carrito.reduce((acc, producto) => acc + (Number(producto.precioOriginal) * Number(producto.cantidad)), 0);
+
+  console.log("esto es el carro",carrito)
   const total = subtotal - descuentoTotal;
   return (
     <Drawer
@@ -25,7 +26,12 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
         {/* Lista de productos */}
         <div className="space-y-4 flex-grow">
           {carrito.length === 0 ? (
-            <p>El carrito está vacío.</p>
+            <div className="flex items-center justify-center flex-col">
+              <img
+              src="src/img/carrito vacio.jpg"
+              className="w-96"></img>
+<p className="">Aún no hay articulos </p>
+            </div>
           ) : (
             carrito.map((producto) => (
               <div className="flex flex-col">
@@ -38,7 +44,7 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
                     <h2 className="font-semibold text-base text-left">{producto.producto}</h2>
                     <p className="text-sm text-gray-500 text-left">Talla: {producto.talla}</p>
                     <p className="font-bold text-left">
-                      ${producto.precio * producto.cantidad}
+                      ${producto.precioSeleccionado * producto.cantidad}
                     </p>
                   </div>
                   <div className="flex items-center">
@@ -67,20 +73,27 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
             ))
           )}
  {/* Resumen de compra */}
+ {carrito.length === 0 ? (
+           <Link to="/tienda">
+           <button className="w-full bg-black text-white mt-6 p-4 font-roboto font-bold rounded-lg hover:bg-slate-900">
+             Explorar artículos
+             </button>
+             </Link>
+          ) : (
  <div className="mt-6 p-4 bg-custom rounded-lg">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>$565</span>
+                    <span>${subtotal}</span>
                   </div>
                   <div className="flex justify-between text-red-500">
-                    <span>Descuento (-20%)</span>
-                    <span>-$113</span>
+                    <span>Descuento</span>
+                    <span>-${descuentoTotal}</span>
                   </div>
                   <div className="flex justify-between font-bold mt-2">
                     <span>Total</span>
-                    <span>$467</span>
+                    <span>${total}</span>
                   </div>
-                </div>
+                
                 {/* Botón de pago */}
                 <div className="">
                   <Link to={{ pathname: '/resumencompra', state: { carrito } }}>
@@ -89,6 +102,8 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
                     </button>
                   </Link>
                 </div>
+                </div>
+              )}
         </div>
       </div>
     </Drawer>

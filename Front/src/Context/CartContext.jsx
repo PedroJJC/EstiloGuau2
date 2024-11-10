@@ -19,17 +19,18 @@ export const CartProvider = ({ children }) => {
 
   // Guardar el carrito en localStorage
   useEffect(() => {
+    console.log("cvdcscfed",JSON.stringify(carrito))
     localStorage.setItem('carrito', JSON.stringify(carrito));
   }, [carrito]);
 
-  const agregarAlCarrito = (producto, talla,  cantidad, productosOferta, productosPrecios) => {
+  const agregarAlCarrito = (producto, talla,  cantidad, precioSeleccionado,precioOriginal, productosOferta ) => {
     const nuevaCantidad = Number(producto.cantidad ?? 0) + 1;
    
   
     setCarrito((prevCarrito) => {
       
       const productoExistente = prevCarrito.find(
-        (item) => item.idProducto === producto.idProducto && item.talla === talla && item.productosPrecios === productosPrecios && item.productosOferta === productosOferta
+        (item) => item.idProducto === producto.idProducto && item.talla === talla && item.precioSeleccionado === precioSeleccionado && item.precioOriginal === precioOriginal&& item.productosOferta === productosOferta
       );
       
 
@@ -51,7 +52,7 @@ export const CartProvider = ({ children }) => {
            progress: undefined,
         })    
         // Si no existe, agregarlo con cantidad 1
-        return [...prevCarrito, { ...producto, talla: talla, cantidad: cantidad }];
+        return [...prevCarrito, { ...producto, talla: talla, cantidad: cantidad, precioSeleccionado : precioSeleccionado, precioOriginal : precioOriginal, productosOferta : productosOferta }];
       }
       
     });

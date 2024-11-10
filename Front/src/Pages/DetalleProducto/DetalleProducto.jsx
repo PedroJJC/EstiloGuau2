@@ -36,9 +36,13 @@ const DetalleProducto = () => {
   const [showModal, setShowModal] = useState(false);
   const [valoracion, setValoracion] = useState(0);
   const [tallaSeleccionada, setTallaSeleccionada] = useState('');
-
   const { userData } = useContext(UserContext);
   const { idUsuario } = userData;
+  let precioSeleccionado = productosPrecios && productosOferta
+  ? productosPrecios - (productosPrecios * productosOferta / 100)
+  : productosPrecios || 0;
+  let precioOriginal = productosPrecios;
+  
 
   useEffect(() => {
     if (!idProducto) {
@@ -46,23 +50,17 @@ const DetalleProducto = () => {
       return;
     }
 
+    if (tallas.length > 0 && !tallaSeleccionada) {
+      const primeraTalla = tallas[0].Talla;
+      setTallaSeleccionada(primeraTalla);
+      setIdTalla(primeraTalla);
+    }
+
     const obtenerProducto = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/productos/${idProducto}`);
         const producto = response.data;
         console.log(response.data);
-
-        // Suponiendo que el producto tiene un campo `precio` y `porcentaje_descuento`
-        
-        const precioConDescuento = producto.precio
-        /*if (producto.porcentaje_descuento != 0) {
-          const descuento = (producto.precio * producto.porcentaje_descuento) / 100;
-          const precioConDescuento = producto.precio - descuento;
-          producto.precioConDescuento = precioConDescuento;
-        } else {
-          // Si el porcentaje de descuento es 0, el precio con descuento es 0
-          producto.precioConDescuento = 0;
-        }*/
         setProducto(producto);
         setSelectedImage(response.data.foto.split(',')[0]);
         setCargando(false);
@@ -74,7 +72,7 @@ const DetalleProducto = () => {
     };
     obtenerProducto();
     fetchComentarios();
-  }, [idProducto]);
+  }, [idProducto, tallas, tallaSeleccionada]);
 
   const obtenerTallas = async () => {
     try {
@@ -304,13 +302,13 @@ const DetalleProducto = () => {
         <p className="font-roboto text-start text-2xl new-price text-red-600 my-6">
          <p className='line-through'>${productosPrecios} </p>
          <p className='font-roboto text-start text-3xl new-price text-green-500 my-6' >
-          ${productosPrecios - (productosPrecios* productosOferta / 100)}</p>
+          ${precioSeleccionado}</p>
           
         </p>
       ) : (
         productosPrecios  ? (
           <p className="font-roboto text-start text-3xl new-price text-green-500 my-6">
-            ${productosPrecios}
+            ${precioSeleccionado}
           </p>
         ) : (
           <p>Seleccione una talla</p>
@@ -323,14 +321,15 @@ const DetalleProducto = () => {
           <button
             className={`mr-6 add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second `}          
           
-            onClick={() => agregarAlCarrito(producto,tallaSeleccionada, cantidad, productosPrecios, productosOferta)}>
+            onClick={() => agregarAlCarrito(producto,tallaSeleccionada, cantidad, precioSeleccionado,precioOriginal, productosOferta)}>
             Comprar
           </button>
         </Link>
        
             <button 
             className="add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second" 
-            onClick={() => agregarAlCarrito(producto,tallaSeleccionada, cantidad, productosPrecios, productosOferta)}>
+            onClick={() => agregarAlCarrito(producto,tallaSeleccionada, cantidad, precioSeleccionado,precioOriginal, productosOferta)}>
+              
               Agregar al carrito
             </button>
           </div>
