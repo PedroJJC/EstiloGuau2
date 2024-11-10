@@ -3,23 +3,6 @@ import { Link } from 'react-router-dom';
 import Navbar from "../../Components/Navbar/Navbar";
 
 const Suscripciones = () => {
-  const planes = [
-    {
-      titulo: 'BASICO',
-      precio: '$100',
-      beneficios: ['Acceso a la tienda', 'Compras seguras', 'Promocionar 10 artículos'],
-    },
-    {
-      titulo: 'PLUS',
-      precio: '$150',
-      beneficios: ['Acceso a la tienda', 'Compras seguras', 'Promocionar 15 artículos'],
-    },
-    {
-      titulo: 'PREMIUM',
-      precio: '$200',
-      beneficios: ['Acceso a la tienda', 'Compras seguras', 'Promocionar 20 artículos'],
-    },
-  ];
 
   return (
     <div className="flex flex-col items-center py-20">

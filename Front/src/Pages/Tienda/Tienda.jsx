@@ -244,7 +244,7 @@ const handleSearchChange = (e) => {
           <Sidebar.Items >
             <Sidebar.ItemGroup className='py-2'>
               {/* Marca */}
-              <Sidebar.Collapse label="Marca"  className='shadow-md my-5 my-5'>
+              <Sidebar.Collapse label="Marca"  className='shadow-md my-5'>
                 <Sidebar.Item>
                   <div className="p-4">
                     {/*<input

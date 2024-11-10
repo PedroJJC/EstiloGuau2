@@ -6,6 +6,7 @@ import Navbar from '../../Components/Navbar/Navbar';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
+
 const Suscripcion = () => {
   const [suscripciones, setSuscripciones] = useState([]);
   const { userData } = useContext(UserContext);
@@ -31,14 +32,16 @@ const Suscripcion = () => {
 
   const manejarSuscripcion = async (suscripcion) => {
     if (!idUsuario) {
-      alert('Debes estar logueado para suscribirte.');
+    
+     // alert('Debes estar logueado para suscribirte.');
       return;
     }
     
     try {
       const response = await axios.get(`http://localhost:3001/empresa/verificar/${idUsuario}`);
       if (response.data.existe) {
-        alert(`Ya tienes una empresa asociada: ${response.data.vendedor.nom_empresa}`);
+        
+       alert(`Ya tienes una empresa asociada: ${response.data.vendedor.nom_empresa}`);
         navigate('/perfil-vendedor');
         return;
       }
@@ -96,54 +99,66 @@ const Suscripcion = () => {
   };
 
   return (
-    <div className="pl-72 pt-24 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-      <Navbar />
-      <h1 className="text-4xl text-center font-extrabold mb-10 mt-10 uppercase">SUSCRIPCIONES DISPONIBLES</h1>
-  
-      {error && <p className="text-red-500 text-center">{error}</p>}
-  
-      <div className="flex justify-center gap-8 mt-10 flex-wrap">
-        {suscripciones.map(suscripcion => (
-          <div
-            key={suscripcion.id_sub}
-            className="bg-black text-white p-8 rounded-[20px] shadow-lg border-[6px] border-[#CCD5AE] max-w-sm flex flex-col justify-between"
-            style={{ width: '300px', height: '400px', overflow: 'hidden' }}
-          >
-            <div>
-              <h2 className="text-3xl font-bold mb-4 text-left">{suscripcion.nombre_sub}</h2>
-              <p className="mb-4 text-left" style={{ maxHeight: '80px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {suscripcion.descripcion_sub}
-              </p>
-              <p className="text-xl mb-6 text-left">Desde ${suscripcion.precio_sub}</p>
-            </div>
-            <span
+    <div className="pt-24 w-full items-center justify-center carrito-page flex flex-col min-h-96 shadow-lg">
+  <Navbar />
+  <h1 className="text-7xl text-center font-extrabold mb-7 mt-10 uppercase">SUSCRIPCIONES</h1>
+
+  {error && <p className="text-red-500 text-center">{error}</p>}
+
+  <div className="flex justify-center gap-8 flex-wrap">
+    {suscripciones.map(suscripcion => (
+      <div
+        key={suscripcion.id_sub}
+        className="bg-black text-white p-8 shadow-lg border-[16px] border-[#CCD5AE] max-w-lg flex flex-col items-center"
+        style={{
+          width: '350px',
+          height: '500px', // Asegura una altura uniforme para todas las tarjetas
+          overflow: 'hidden',
+          borderRadius: '5rem', // Ajusta según el redondeado deseado
+        }}
+      >
+        <div className="flex flex-col flex-grow items-center justify-between font-roboto">
+          <h2 className="text-6xl font-extrabold text-center">{suscripcion.nombre_sub}</h2>
+          <p className="text-2xl font-medium">
+            {suscripcion.descripcion_sub}
+          </p>
+          <ul className="list-disc pl-5 text-1xl font-light">
+            {Array.isArray(suscripcion.beneficios) && suscripcion.beneficios.map((beneficio, index) => (
+              <li key={index}>{beneficio}</li>
+            ))}
+          </ul>
+          <p className="text-2xl mb-8 text-center">Desde ${suscripcion.precio_sub}</p>
+        </div>
+
+        <button
+          className="bg-[#FFFF00] text-black px-8 py-6 rounded-full text-3xl font-bold hover:bg-yellow-500 transition-colors"
+          onClick={() => manejarSuscripcion(suscripcion)}
+        >
+          SUSCRIBIRSE
+        </button>
+      </div>
+    ))}
+
+{/** 
+           <span
               className="text-blue-500 underline mt-2 cursor-pointer"
               onClick={() => openModal(suscripcion)}
             >
               Ver más
             </span>
-            <button
-              className="bg-[#FFFF00] text-black px-8 py-3 rounded-full text-lg font-bold hover:bg-yellow-500 transition-colors"
-              onClick={() => manejarSuscripcion(suscripcion)}
-            >
-              SUSCRIBIRSE
-            </button>
-          </div>
-        ))}
+           */}
         {suscripciones.length === 0 && (
           <div className="text-center text-gray-500">
             <h2 className="text-2xl">No hay suscripciones disponibles.</h2>
           </div>
         )}
       </div>
-  
-      
-  
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         subscription={selectedSubscription} 
-      />
+      /> 
+      
       <div className="">
       <Footer />
       </div>
