@@ -1,7 +1,13 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 // Crear el contexto
 export const CartContext = createContext();
+
+const notify = () => {
+   
+
+};
 
 // Crear un provider
 export const CartProvider = ({ children }) => {
@@ -35,9 +41,19 @@ export const CartProvider = ({ children }) => {
         : item
         );
       } else {
+        toast.success('Producto agregado al carrito!',{
+           position: "top-center",
+           autoClose: 900, // Tiempo que permanece visible (ms)
+           hideProgressBar: true,
+           closeOnClick: true,
+           pauseOnHover: true,
+           draggable: true,
+           progress: undefined,
+        })    
         // Si no existe, agregarlo con cantidad 1
         return [...prevCarrito, { ...producto, talla: talla, cantidad: cantidad }];
       }
+      
     });
   };
 

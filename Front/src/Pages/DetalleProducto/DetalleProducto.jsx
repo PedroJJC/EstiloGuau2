@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { CartContext } from '../../Context/CartContext';
 import Navbar from '../../Components/Navbar/Navbar';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../../Context/UserContext';
 import Footer from "../../Components/Footer/Footer";
 import { AiFillStar } from 'react-icons/ai';
-import { Link } from 'react-router-dom';
 
 
 const DetalleProducto = () => {
@@ -212,7 +211,7 @@ const DetalleProducto = () => {
 
 
   return (
-    <div className="flex flex-col p-4 pt-24 h-screen">
+    <div className="flex flex-col pt-36 w-full h-screen">
       <Navbar />
       <div className="flex justify-start">
         {/*<div
@@ -224,7 +223,7 @@ const DetalleProducto = () => {
       </div>*/}
       </div>
 
-      <div className="flex flex-row items-center w-full p-16 justify-center">
+      <div className="flex flex-row items-center w-full justify-center">
         <div className="flex">
           <div className="flex flex-col">
             {fotos.map((foto, index) => (
@@ -320,10 +319,11 @@ const DetalleProducto = () => {
   </p>
           <div className="flex items-start">
 
-        <Link  to={`/resumencompra1/${producto.idProducto}/${tallaSeleccionada}/${cantidad}/${productosOferta}/${productosPrecios}`}>
+        <Link  to={"/resumencompra"}>
           <button
             className={`mr-6 add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second `}          
-          >
+          
+            onClick={() => agregarAlCarrito(producto,tallaSeleccionada, cantidad, productosPrecios, productosOferta)}>
             Comprar
           </button>
         </Link>

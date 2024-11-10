@@ -62,10 +62,12 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
                       Eliminar
                     </button>
                   </div>
-
-                </div>
-                {/* Resumen de compra */}
-                <div className="mt-6 p-4 bg-custom rounded-lg">
+                </div>               
+              </div>
+            ))
+          )}
+ {/* Resumen de compra */}
+ <div className="mt-6 p-4 bg-custom rounded-lg">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
                     <span>$565</span>
@@ -87,15 +89,6 @@ export default function ShoppingCart({ isOpen, setIsOpen }) {
                     </button>
                   </Link>
                 </div>
-
-              </div>
-
-
-
-            ))
-          )}
-
-
         </div>
       </div>
     </Drawer>
