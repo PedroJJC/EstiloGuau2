@@ -3,12 +3,15 @@ import { Carrusel } from "../../Components/Carrusel/Carrusel";
 import Perritos from "../../img/Perritos.png";
 import PerritoCapucha from "../../img/PerritoCapucha.jpg";
 import Footer from '../../Components/Footer/Footer';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import './Landing.css';
 import { HiArrowCircleDown,  HiArrowCircleUp } from "react-icons/hi";
 import { Link } from 'react-router-dom';
+import { LocationContext  } from '../../Context/LocationContext';
+
 
 function Landing() {
+  const { location, city, country } = useContext(LocationContext);
   const [translateY, setTranslateY] = useState(0);
   const [maxTranslateY, setMaxTranslateY] = useState(0);
 
@@ -67,7 +70,6 @@ function Landing() {
       {/* Contenedor Principal con Padding Superior Responsivo */}
       <main className=" mt-10     transition-transform duration-700 ease-in-out"
         style={{ transform: `translateY(${translateY}px)` }}>
-        
         {/* Sección de Imagen Principal */}
         <div className="main-image-section bg-black ">
           <div className="main-image flex justify-center">

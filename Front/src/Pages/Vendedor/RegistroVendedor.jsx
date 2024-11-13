@@ -4,16 +4,19 @@ import { UserContext } from '../../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
+import { LocationContext  } from '../../Context/LocationContext';
+
 
 const RegistroVendedor = () => {
+  const { location, city, country } = useContext(LocationContext);
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nom_empresa: '',
-    direccion: '',
+    direccion: location,
     telefono: '',
-    pais: '',
-    estado: '',
+    pais: country,
+    estado: city,
     codigo_postal: '',
     rfc: '',
   });
