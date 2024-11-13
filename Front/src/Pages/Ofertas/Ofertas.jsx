@@ -65,7 +65,7 @@ const Ofertas = () => {
                     <th className="py-3 px-4 text-center border border-white-900">Eliminar</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-300">
+                <tbody className="divide-y divide-gray-300 text-center">
                   {ofertas.map(oferta => (
                     <tr key={oferta.idOferta}>
                       <td className="py-3 px-4 border border-gray-300">{oferta.oferta}</td>

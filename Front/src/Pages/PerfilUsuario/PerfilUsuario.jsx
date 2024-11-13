@@ -4,19 +4,24 @@ import Navbar from "../../Components/Navbar/Navbar";
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../Context/UserContext';
 import { FiEdit } from "react-icons/fi";
+import { FaArrowRight } from 'react-icons/fa';
+import Footer from "../../Components/Footer/Footer";
+
 
 const PerfilUsuario = () => {
   const { userData } = useContext(UserContext);
   const [usuario, setUsuario] = useState(null);
-  const [compras, setCompras] = useState(null);
+  const [compras, setCompras] = useState([]);
+  const [suscripcionesActivas, setSuscripcionesActivas] = useState(0);
+  const [puntosFidelidad, setPuntosFidelidad] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
         const response = await Axios.get(`http://localhost:3001/usuarioget/${userData.idUsuario}`);
-        if (!response.data) {
-          throw new Error('Usuario no encontrado');
-        }
         setUsuario(response.data);
       } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error);
@@ -29,84 +34,157 @@ const PerfilUsuario = () => {
   useEffect(() => {
     const fetchCompras = async () => {
       try {
-        const response = await Axios.get(`http://localhost:3001/compras/${userData.idUsuario}`);
-        if (!response.data) {
-          throw new Error('No se pudieron obtener las compras');
-        }
+        const response = await Axios.get(`http://localhost:3001/comprasxus/${userData.idUsuario}`);
         setCompras(response.data);
       } catch (error) {
         console.error('Error al obtener las compras:', error);
-        // Manejo de errores (puedes mostrar un mensaje al usuario, etc.)
       }
     };
 
     fetchCompras();
-  }, [userData.idUsuario]); // Dependencia añadida
+  }, [userData.idUsuario]);
+
+  useEffect(() => {
+    const fetchSuscripcionesActivas = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:3001/suscripciones-activas/${userData.idUsuario}`);
+        setSuscripcionesActivas(response.data.totalSuscripciones);
+      } catch (error) {
+        console.error('Error al obtener suscripciones activas:', error);
+      }
+    };
+
+    const fetchPuntosFidelidad = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:3001/puntos-fidelidad/${userData.idUsuario}`);
+        setPuntosFidelidad(response.data.totalPuntos);
+      } catch (error) {
+        console.error('Error al obtener puntos de fidelidad:', error);
+      }
+    };
+
+    fetchPuntosFidelidad();
+    fetchSuscripcionesActivas();
+  }, [userData.idUsuario]);
 
   if (!usuario) {
     return <div className="min-h-screen flex items-center justify-center font-roboto">Cargando perfil...</div>;
   }
 
+  const comprasRecientes = compras.slice(0, 3);
+
+  const handleOpenModal = (producto) => {
+    setSelectedProduct(producto);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedProduct(null);
+  };
+
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100">
       <Navbar />
-      <div className="flex-row flex justify-right pt-20">
-        {/*{userData.idRol}*/}
-        <p className="pt-10 text-start font-roboto font-semibold text-5xl ml-10">Mi Cuenta</p>
-      </div>
-      <div className="flex justify-end mr-16">
-        <Link to={`/formUs`}>
-          <FiEdit className="h-10 w-10 text-black hover:text-custom cursor-pointer" />
-        </Link>
-      </div>
+      <div className="pt-32 px-56">
+        <div className="bg-gradient-to-r from-custom to-second  p-6 rounded-lg mb-8">
+          <h1 className="text-5xl font-bold text-black text-center">Bienvenido, {usuario.nombre}!</h1>
+        </div>
 
-      <div className="grid grid-cols-3 gap-4 mx-8">
-        <div className="col-span-2 p-4">
-          <div className="grid grid-cols-4 gap-4">
-            <div className="col-span-2 p-4">
-              <p className="text-left text-3xl font-bold pb-2 font-roboto">Nombre:</p>
-              <p className="text-left text-2xl font-roboto">{usuario.nombre} {usuario.apellido}</p>
+        <div className=" bg-gray-100">
+  <div className="bg-white flex items-center justify-center w-full shadow-lg rounded-lg mb-8 ">
+   <div className="flex justify-center items-center">
+   <img src={`http://localhost:3001/images/${usuario.foto}`} alt=""
+      className="rounded-full h-auto w-64 object-cover mr-6" />
+    <div className="flex-grow p-20">
+      <h2 className="text-4xl font-bold">{usuario.nombre} {usuario.apellido}</h2>
+      <p className="text-2xl font-bold">Email: <span className="font-thin">{usuario.email}</span> </p>
+      <p className="text-2xl font-bold">Contraseña: <span className="font-thin">  {'*'.repeat(usuario.password.length)}</span></p>
+      <Link to={`/formUs`} className="ml-1 m-2">
+        <button className="px-4 py-2 bg-custom text-black font-semibold rounded-lg shadow-md hover:bg-second focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+          Editar perfil
+        </button>
+      </Link>
+    </div>
+   </div>
+    
+  </div>
+</div>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-white shadow-lg rounded-lg p-4 text-center">
+            <h3 className="text-2xl font-bold">Compras Realizadas</h3>
+            <p className="text-3xl">{compras.length}</p>
+          </div>
+          {/**
+           *  <div className="bg-white shadow-lg rounded-lg p-4 text-center">
+            <h3 className="text-2xl font-bold">Suscripciones Activas</h3>
+            <p className="text-3xl">{suscripcionesActivas}</p>
+          </div>
+           */}
+         
+          <div className="bg-white shadow-lg rounded-lg p-4 text-center">
+            <h3 className="text-2xl font-bold">Tus Puntos por Compras</h3>
+            <p className="text-3xl">{puntosFidelidad}</p>
+          </div>
+        </div>
+
+        <h2 className="text-5xl font-semibold mb-4">Historial de compras</h2>
+        <div
+          className="relative"
+          onMouseEnter={() => setShowButton(true)}
+          onMouseLeave={() => setShowButton(false)}
+        >
+          {comprasRecientes.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {comprasRecientes.map(compra => (
+                <div key={compra.idCompra} className="bg-white shadow-lg rounded-lg p-4 flex flex-col">
+                  <img src={`http://localhost:3001/images/${compra.foto}`} className="h-24 w-24 rounded-full mb-4 mx-auto" alt="Producto" />
+                  <h3 className="font-bold">{compra.descripcion_producto}</h3>
+                  <p className='font-bold'>Precio: ${compra.precio}</p>
+                  <p>Talla: {compra.talla}</p>
+                  <button
+                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    onClick={() => handleOpenModal(compra)}
+                  >
+                    Ver Detalles
+                  </button>
+                </div>
+              ))}
             </div>
-            <div className="col-span-2 p-4">
-              <p className="text-left text-3xl font-bold font-roboto pb-2">Contraseña:</p>
-              <p className="text-left text-2xl font-roboto">{'*'.repeat(usuario.password.length)}</p>
+          ) : (
+            <p>No has realizado compras aún.</p>
+          )}
+
+          {compras.length > 3 && showButton && (
+            <Link to="/ver-todas-compras" className="absolute bottom-32 right-4 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700">
+              <span className="flex items-center justify-center">
+                <span>Ver tus compras</span>
+                <FaArrowRight className="ml-2" /> {/* Icono de flecha a la derecha */}
+              </span>
+            </Link>
+          )}
+        </div>
+
+        {/* Modal para detalles del producto */}
+        {modalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-6 shadow-lg w-1/2">
+              <h2 className="text-2xl font-bold mb-4">{selectedProduct?.producto}</h2>
+              <img src={`http://localhost:3001/images/${selectedProduct?.foto}`} alt={selectedProduct?.producto} className="w-full h-48 object-cover mb-4" />
+              <p className="text-lg"><strong>Descripción:</strong> {selectedProduct?.descripcion}</p>
+              <p className="text-lg"><strong>Precio:</strong> ${selectedProduct?.precio}</p>
+              <p className="text-lg"><strong>Talla:</strong> {selectedProduct?.talla}</p>
+              <p className="text-lg"><strong>Cantidad:</strong> {selectedProduct?.cantidad_producto}</p>
+              <p className="text-lg"><strong>Marca:</strong> {selectedProduct?.Marca}</p>
+              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg" onClick={handleCloseModal}>Cerrar</button>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-1 p-4">
-              <p className="text-left text-3xl font-bold pb-2 font-roboto">Email:</p>
-              <p className="text-left text-2xl font-roboto">{usuario.email}</p>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-1">
-          <p className="text-left text-3xl font-bold font-roboto pb-2">Foto:</p>
-          <img src={`http://localhost:3001/images/${usuario.foto}`} alt="Usuario" className="rounded-full h-60 w-60 object-cover" />
-          {/*<img src={`${usuario.foto}`} className="round ed-full h-60 w-60 object-cover" />*/}
-        </div>
+        )}
       </div>
-
-      <div className="flex-row flex justify-right pt-4">
-        <p className="text-start font-roboto font-semibold text-5xl ml-10 pb-5">Últimas compras</p>
+      <div className="">
+        <Footer />
       </div>
-
-      {/* Aquí debes mostrar las compras, si las tienes disponibles en el estado `compras` */}
-      {compras && (
-        <div className="grid grid-cols-3 gap-4 mx-8 ">
-          {compras.map(compra => (
-            <div key={compra.idCompra} className="flex flex-row p-4 border shadow-xl border-gray-300 rounded">
-              <img src={`http://localhost:3001/images/${compra.foto}`}
-                className=" h-28 rounded-full p-3"></img>
-              <div className='flex flex-col text-left' >
-                <p>Producto: {compra.descripcion_producto}</p>
-                <p>Precio: ${compra.precio}</p>
-                <p>Talla: {compra.talla}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
     </div>
   );
 };

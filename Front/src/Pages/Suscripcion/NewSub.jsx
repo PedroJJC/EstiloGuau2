@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar/Navbar';
@@ -10,10 +10,12 @@ const FormularioSuscripcion = () => {
     nombre_sub: '',
     descripcion_sub: '',
     duracion_sub: '',
-    precio_sub: ''
+    precio_sub: '',
+    beneficios: ''
   });
 
   const [agregado, setAgregado] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,17 +28,38 @@ const FormularioSuscripcion = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Resetear error
+
+    // Validaciones
+    if (suscripcion.precio_sub <= 0) {
+      setError('El precio debe ser un número positivo.');
+      return;
+    }
+
+    // Convertir beneficios a formato JSON (array de strings)
+    const beneficiosArray = suscripcion.beneficios
+      .split('\n') // Dividir por saltos de línea
+      .map(beneficio => beneficio.trim()) // Eliminar espacios en blanco
+      .filter(beneficio => beneficio !== ''); // Eliminar entradas vacías
+
+    const nuevaSuscripcion = {
+      ...suscripcion,
+      //beneficios: JSON.stringify(beneficiosArray) // Convertir a JSON
+      beneficios: beneficiosArray // Mantener como array
+    };
+
     try {
-      const response = await axios.post('http://localhost:3001/api/suscripcion', suscripcion);
+      const response = await axios.post('http://localhost:3001/suscripcion', nuevaSuscripcion);
       if (response.status === 201) {
         setAgregado(true);
         setTimeout(() => {
           setAgregado(false);
-          navigate('/suscripcion'); // Cambia a la ruta que corresponda
+          navigate('/CatSub');
         }, 2000);
       }
     } catch (error) {
       console.error('Error al agregar la suscripción:', error);
+      setError('Error al agregar la suscripción. Intente nuevamente.');
     }
   };
 
@@ -55,6 +78,12 @@ const FormularioSuscripcion = () => {
         {agregado && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
             <strong className="font-bold">¡Suscripción agregada correctamente!</strong>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong className="font-bold">Error:</strong> {error}
           </div>
         )}
 
@@ -122,6 +151,21 @@ const FormularioSuscripcion = () => {
             />
           </div>
 
+          <div className="mb-4">
+            <label htmlFor="beneficios" className="block text-gray-700 font-bold mb-2">
+              Beneficios (ingresa uno por línea)
+            </label>
+            <textarea
+              id="beneficios"
+              name="beneficios"
+              value={suscripcion.beneficios}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Ingrese los beneficios de la suscripción, uno por línea"
+              required
+            />
+          </div>
+
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -130,6 +174,7 @@ const FormularioSuscripcion = () => {
               Agregar
             </button>
             <button
+              type="button"
               onClick={() => navigate(-1)}
               className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >

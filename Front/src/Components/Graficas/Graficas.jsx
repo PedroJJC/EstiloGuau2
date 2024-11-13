@@ -30,6 +30,7 @@ ChartJS.register(
 
 const Graficas = () => {
   const { userData } = useContext(UserContext);
+  const { idRol } = userData;
 
     const [ventasMensuales, setVentasMensuales] = useState([]);
     const [ventasSemanales, setVentasSemanales] = useState(0);
@@ -53,37 +54,71 @@ const Graficas = () => {
       return fechaFormateada;
     };
 
-        const fetchVentasMensuales = async () => {
+    const fetchVentasMensuales = async () => {
       // Función para obtener ventas mensuales
       try {
-      const response = await axios.get(`http://localhost:3001/ventas/mensuales/${userData.idUsuario}`);
-      //console.log(userData.idUsuario)
-      setVentasMensuales(response.data);
-      //console.log(response.data)
-    } catch (error) {
-      console.error('Error fetching ventas mensuales:', error);
-    }
-  };
+        let response;
+        if (userData.idRol === 2) {
+          // Si el rol es 2, obtenemos las ventas mensuales para un vendedor específico
+          response = await axios.get(`http://localhost:3001/ventas/mensuales/${userData.idVendedor}`);
+        } else if (userData.idRol === 3) {
+          // Si el rol es 3, obtenemos las ventas mensuales generales
+          response = await axios.get(`http://localhost:3001/ventas/mensuales`);
+        } else {
+          console.warn('Rol no válido para obtener ventas mensuales.');
+          return; // O maneja el caso de rol no válido según tus necesidades
+        }
+    
+        setVentasMensuales(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching ventas mensuales:', error);
+      }
+    };
 
     // Función para obtener ventas semanales
     const fetchVentasSemanales = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/ventas/semana/${userData.idUsuario}`);
+        let response;
+        if (userData.idRol === 2) {
+          // Si el rol es 3, obtenemos las ventas semanales para un vendedor específico
+          response = await axios.get(`http://localhost:3001/ventas/semana/${userData.idVendedor}`);
+        } else if (userData.idRol === 3) {
+          // Si el rol es 2, obtenemos las ventas semanales generales
+          response = await axios.get(`http://localhost:3001/ventas/semana`);
+        } else {
+          console.warn('Rol no válido para obtener ventas semanales.');
+          return; // Maneja el caso de rol no válido según tus necesidades
+        }
+    
         setVentasSemanales(response.data[0]?.total_ventas_semana);
       } catch (error) {
         console.error('Error fetching ventas semanales:', error);
       }
     };
+    
 
       // Función para obtener ventas diarias
-  const fetchVentasDiarias = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/ventas/dia/${userData.idUsuario}`);
-      setVentasDiarias(response.data[0]?.total_ventas_dia || 0);
-    } catch (error) {
-      console.error('Error fetching ventas diarias:', error);
-    }
-  };
+      const fetchVentasDiarias = async () => {
+        try {
+          let response;
+          if (userData.idRol === 3) {
+            // Si el rol es 3, obtenemos las ventas diarias generales
+            response = await axios.get(`http://localhost:3001/ventas/dia`);
+          } else if (userData.idRol === 2) {
+            // Si el rol es 2, obtenemos las ventas diarias para un vendedor específico
+            response = await axios.get(`http://localhost:3001/ventas/dia/${userData.idVendedor}`);
+          } else {
+            console.warn('Rol no válido para obtener ventas diarias.');
+            return; // O maneja el caso de rol no válido según tus necesidades
+          }
+      
+          setVentasDiarias(response.data[0]?.total_ventas_dia || 0);
+        } catch (error) {
+          console.error('Error fetching ventas diarias:', error);
+        }
+      };
+      
 
     // Llamar a las funciones al cargar el componente
     useEffect(() => {
@@ -108,14 +143,26 @@ const Graficas = () => {
     useEffect(() => {
       const fetchProductosMasVendidos = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/mas-vendidos/${userData.idUsuario}`);
-          //console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
-          
+          let response;
+          if (userData.idRol === 3) {
+            // Si el rol es 3, obtenemos los productos más vendidos sin especificar vendedor
+            response = await axios.get(`http://localhost:3001/mas-vendidos`);
+            console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
+          } else if (userData.idRol === 2) {
+            // Si el rol es 2, obtenemos los productos más vendidos para un vendedor específico
+            response = await axios.get(`http://localhost:3001/mas-vendidos/${userData.idVendedor}`);
+            //console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
+          } else {
+            console.warn('Rol no válido para obtener productos más vendidos.');
+            return; // O maneja el caso de rol no válido según tus necesidades
+          }
+      
           setProductosMasVendidos(response.data);
         } catch (error) {
           console.error('Error al obtener productos más vendidos:', error);
         }
       };
+      
     
       fetchProductosMasVendidos();
     }, []);
@@ -148,12 +195,24 @@ const Graficas = () => {
     useEffect(() => {
       const fetchGananciasMensuales = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/ganancias/mensuales/${userData.idUsuario}`);
+          let response;
+      
+          if (userData.idRol === 2) {
+            // Si el rol es 2, obtenemos las ganancias mensuales para un vendedor específico
+            response = await axios.get(`http://localhost:3001/ganancias/mensuales/${userData.idVendedor}`);
+          } else if (userData.idRol === 3) {
+            // Si el rol es 3, obtenemos las ganancias mensuales generales
+            response = await axios.get(`http://localhost:3001/ganancias/mensuales`);
+          } else {
+            console.warn('Rol no válido para obtener ganancias mensuales.');
+            return; // Maneja el caso de rol no válido según tus necesidades
+          }
+      
           const data = response.data;
-          //console.log(data)
+          // Procesar los datos para las gráficas
           const labels = data.map(item => `${item.mes}/${item.anio}`);
           const ganancias = data.map(item => item.total_ganancias);
-  
+      
           setLineData({
             labels: labels,
             datasets: [
@@ -163,7 +222,7 @@ const Graficas = () => {
               },
             ],
           });
-
+      
           //console.log('Datos recibidos:', response.data);
         } catch (error) {
           console.error('Error fetching ganancias mensuales:', error);
@@ -214,8 +273,8 @@ const Graficas = () => {
     </p>          <p className="text-start text-sm text-green-700">Fecha: {obtenerFechaActual()}</p>
         </div>
       </div>
-      <div className="col-span-2 pb-8 pl-24 pt-2 h-96 bg-custom rounded-md shadow-xl">
-      <h2>Ganancias por mes</h2>
+      <div className="col-span-2 pb-8 pl-2 pt-2 h-auto bg-custom rounded-md shadow-xl">
+      <h2 className='my-2 text-start text-xl font-semibold'>Ganancias por mes</h2>
         <Line data={lineData} options={lineOptions} />
       </div>
 

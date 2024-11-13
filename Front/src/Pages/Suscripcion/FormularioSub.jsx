@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar/Navbar';
-import FooterAdmin from "../../Components/Footer/FooterAdmin";
+import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 const FormularioSub = () => {
@@ -158,7 +158,7 @@ const FormularioSub = () => {
 
         </div>
         <div className="m-10">
-       <FooterAdmin />
+       <Footer />
        </div>
       </div>
   );

@@ -1,11 +1,12 @@
 import Navbar from '../../Components/Navbar/Navbar';
 import { Carrusel } from "../../Components/Carrusel/Carrusel";
-import Perritos from "../../img/Perritos.jpeg";
+import Perritos from "../../img/Perritos.png";
 import PerritoCapucha from "../../img/PerritoCapucha.jpg";
-import FooterLanding from '../../Components/Footer/FooterLanding';
+import Footer from '../../Components/Footer/Footer';
 import { useEffect, useState } from 'react';
 import './Landing.css';
 import { HiArrowCircleDown,  HiArrowCircleUp } from "react-icons/hi";
+import { Link } from 'react-router-dom';
 
 function Landing() {
   const [translateY, setTranslateY] = useState(0);
@@ -59,28 +60,39 @@ function Landing() {
 
 
   return (
-    <div className="landing-page">
+    <div className="landing-page bg-black">
       {/* Navbar Fijo */}
       <Navbar />
 
       {/* Contenedor Principal con Padding Superior Responsivo */}
-      <main className="pt-24 transition-transform duration-700 ease-in-out"
+      <main className=" mt-10     transition-transform duration-700 ease-in-out"
         style={{ transform: `translateY(${translateY}px)` }}>
         
         {/* Sección de Imagen Principal */}
         <div className="main-image-section bg-black ">
           <div className="main-image flex justify-center">
-            <div className="bg-black w-full">
-              <img
-                className="object-cover w-full h-64 sm:h-64 md:h-80 lg:h-[700px] pt-10"
-                src={Perritos}
-                alt="Perritos"
-              />
-            </div>
+          <div className="relative w-full">
+          <div className="relative w-full">
+            <Link to="/tienda">
+            <button className="absolute bottom-72 left-1/2 transform -translate-x-1/2 z-10 button-landing">
+    <span className="button_top">Explorar productos</span>
+  </button>
+            </Link>
+ 
+
+  <div className="bg-black w-full">
+    <img
+      className="w-full h-80 sm:h-64 md:h-96 lg:h-[800px] pt-10"
+      src={Perritos}
+      alt="Perritos"
+    />
+  </div>
+</div>
+</div>
           </div>
         </div>
 
-        <div className="bg-black py-4 md:py-8">
+        <div className="bg-black md:py-10">
           <div className="max-w-full overflow-hidden">
             <Carrusel />
           </div>
@@ -88,10 +100,10 @@ function Landing() {
 
         <h2 className="pt-10 text-4xl sm:text-sm md:text-7xl lg:text-8xl font-bold bg-black text-white text-center"
   style={{ letterSpacing: '0.6rem' }}>
-  C O L E C C I Ó N &nbsp; V E R A N O 
+  C O L E C C I Ó N &nbsp; I N V I E R N O 
 </h2>
 
-        {/* Sección "CAMINANDO CON ESTILO" */}
+        {/* Sección "CAMINANDO CON ESTILO" 
         <div className="flex flex-col md:flex-row items-center bg-black justify-between px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-white text-center md:text-left mx-auto max-w-screen-xl">
             <h2 className="text-4xl sm:text-6xl md:text-8xl mb-4 font-bold text-center">&nbsp;CAMINANDO</h2>
@@ -107,7 +119,7 @@ function Landing() {
               />
             </div>
           </div>
-        </div>
+        </div>*/}
       </main>
 
 {/* Botones de desplazamiento */}
@@ -131,7 +143,7 @@ function Landing() {
 
 
       {/* Footer */}
-      <FooterLanding />
+      <Footer />
     </div>
   );
 }

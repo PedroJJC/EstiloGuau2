@@ -25,10 +25,16 @@ import EditarOferta from '../Pages/Ofertas/EditarOfertas';
 import FormularioOferta from '../Pages/Ofertas/FormularioOfertas';
 import CatSub from '../Pages/Suscripcion/CatSub';
 import NewSub from '../Pages/Suscripcion/NewSub';
-import Suscripciones from '../Pages/Suscripciones/Suscripciones';
-import Suscripcion from '../Pages/Suscripcion/Suscripcion';
+import Suscripciones from '../Pages/Suscripcion/Suscripciones';
+/* import Suscripcion from '../Pages/Suscripcion/Suscripcion'; */
 import ResumenCompra from '../Pages/Pagos/ResumenCompra';
 import EditarSub from '../Pages/Suscripcion/EditarSub';
+import RegistroVendedor from '../Pages/Vendedor/RegistroVendedor';
+import PerfilVendedor from '../Pages/PerfilUsuario/PerfilVendedor';
+import ProtectedRoute from "../Components/ProtectedRoute";
+import ProductoUser from '../Pages/Compras/productoUser';
+import EditarVendedor from '../Pages/Vendedor/EditarVendedor';
+import Uscupones from '../Pages/Uscupones/Uscupones';
 
 //#endregion
 
@@ -45,10 +51,15 @@ const RoutesComponent = () => {
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Tienda" element={<Tienda />} />
-        <Route path="/Suscripciones" element={<Suscripciones />} />
+        
+        <Route path="/Suscripciones" element={<Suscripciones />} />      
+        <Route path="/Uscupones" element={<Uscupones />} />      
+        <Route path="/registro-vendedor" element={<RegistroVendedor />} />
+        
+        
         <Route path="/DetalleProducto/:idProducto" element={<DetalleProducto />} />
+        <Route path="/ResumenCompra1/:idProducto/:talla/:cantidad/:productosOferta/:productosPrecios" element={<ResumenCompra />} />
         <Route path="/ResumenCompra" element={<ResumenCompra />} />
-
         {/* Rutas protegidas por rol */}
         <Route
           path="/Compras"
@@ -104,7 +115,7 @@ const RoutesComponent = () => {
         <Route
           path="/PerfilUsuario"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 1 || idRol === 2 || idRol === 3 ) ? (
               <PerfilUsuario />
             ) : (
               <Navigate to="/Login" />
@@ -114,7 +125,7 @@ const RoutesComponent = () => {
         <Route
           path="/formUs"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 1 || idRol === 2 || idRol === 3 ) ? (
               <FormUs />
             ) : (
               <Navigate to="/Login" />
@@ -219,22 +230,10 @@ const RoutesComponent = () => {
           }
         />
 
-
         <Route
-          path="/Suscripcion"
+          path="/CatSub"
           element={
-            idRol && (idRol === 3|| idRol === 2) ? (
-              <Suscripcion />
-            ) : (
-              <Navigate to="/Login" />
-            )
-          }
-        />
-
-        <Route
-          path="/suscripcion/form"
-          element={
-            idRol && (idRol === 3 || idRol === 2) ? (
+            idRol && (idRol === 3) ? (
               <CatSub  />
             ) : (
               <Navigate to="/Login" />
@@ -257,6 +256,37 @@ const RoutesComponent = () => {
           element={
             idRol && (idRol === 3 || idRol === 2) ? (
               <EditarSub />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+
+         <Route
+          path="/perfil-vendedor"
+          element={
+            <ProtectedRoute>
+              <PerfilVendedor />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ver-todas-compras"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <ProductoUser  />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+
+        <Route
+          path="/editar-vendedor/:idVendedor"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <EditarVendedor  />
             ) : (
               <Navigate to="/Login" />
             )

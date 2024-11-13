@@ -2,7 +2,7 @@ import { React, useContext } from 'react';
 import { UserContext } from '../../Context/UserContext';
 import { Link } from 'react-router-dom';
 import { Navbar, Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser, HiDocumentText, HiReceiptTax, HiTicket } from "react-icons/hi";
+import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser, HiDocumentText, HiReceiptTax, HiTicket, HiStar } from "react-icons/hi";
 
 const componente = ({ isOpen, toggleSidebar }) => {
   const { userData } = useContext(UserContext);
@@ -42,6 +42,13 @@ const componente = ({ isOpen, toggleSidebar }) => {
                 <Link to="/cupones" >
                   <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
                 </Link>
+
+                <Link to="/perfil-vendedor">
+                  <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
+                    Mi empresa
+                  </Sidebar.Item>
+                </Link>
+
               </>
             )}
 
@@ -74,13 +81,9 @@ const componente = ({ isOpen, toggleSidebar }) => {
                   <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
                 </Link>
 
-                <Link to="/suscripcion" >
-                  <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Suscripciones</Sidebar.Item>
+                <Link to="/CatSub" >
+                  <Sidebar.Item icon={HiStar} className='hover:bg-custom'>Suscripciones</Sidebar.Item>
                 </Link>
-
-               {/* <Link to="/suscripcion/form" >
-                  <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Suscripcion Add</Sidebar.Item>
-                </Link>*/}
 
                 <Link to="/usuarios">
                   <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
@@ -88,10 +91,14 @@ const componente = ({ isOpen, toggleSidebar }) => {
                   </Sidebar.Item>
                 </Link>
 
+                <Link to="/perfil-vendedor">
+                  <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
+                    Mi Empresa
+                  </Sidebar.Item>
+                </Link>
+
               </>
             )}
-
-
 
 
 
