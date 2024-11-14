@@ -8,6 +8,8 @@ import { Dropdown, Navbar, Tabs  } from "flowbite-react";
 import ShoppingCart from '../ShoppingCart/ShoppingCart';
 import Logo from "../../img/Logo.png";
 
+
+
 const Component = () => {
   const { userData, logout } = useContext(UserContext);
   const { idUsuario, idRol } = userData;
@@ -25,7 +27,8 @@ const Component = () => {
   };
 
   return (
-    <Navbar fluid rounded className={`fixed w-full z-20 top-0 start-0 border-b p-4 shadow-md ${isLandingPage ? "bg-black border-gray-700" : "bg-white border-gray-200"}`}>
+  
+    <Navbar fluid rounded className={`fixed w-full z-20 top-0 start-0 border-b p-4 shadow-md  ${isLandingPage ? "bg-white border-white-700" : "bg-white border-gray-200"}`}>
       {/* Contenedor principal */}
       <div className="flex items-center justify-between w-full">
         {/* Logo */}
@@ -40,83 +43,93 @@ const Component = () => {
 
         {/* Título "ESTILO GUAU" */}
         <div className="hidden md:block text-center">
-          <div className={`text-5xl font-semibold tracking-widest font-roboto ${isLandingPage ? "text-white" : "text-black"}`}>
+          <div className={`text-5xl font-semibold tracking-widest font-roboto ${isLandingPage ? "text-black" : "text-black"}`}>
             ESTILO GUAU
           </div>
         </div>
 
-        {/* Botones visibles en pantallas medianas y mayores */}
-        <div className="hidden md:flex items-center space-x-4">
-          {/* Botón de carrito */}
-          <button onClick={() => setIsCartOpen(true)} className={`h-9 w-9 ${isLandingPage ? "bg-black" : ""}`} aria-hidden="true">
-            <ShoppingCartIcon className={`h-9 w-9 ${isLandingPage ? "text-white" : "text-red-500"}`} aria-hidden="true" />
-          </button>
-          <ShoppingCart isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
+  {/* Botones visibles en pantallas medianas y mayores */}
+  <div className="hidden md:flex items-center space-x-10 -ml-4"> {/* Ajuste hacia la izquierda */}
+  {/* Botón de carrito */}
+ 
+  <button 
+    onClick={() => setIsCartOpen(true)} 
+    className={`h-9 w-9 ${isLandingPage ? "bg-white" : ""} -mt-2 focus:outline-none`} // Elimina el contorno
+    aria-hidden="true"
+  >
+    <button className="btn focus:outline-none">
+      <ShoppingCartIcon className={`h-9 w-9 ${isLandingPage ? "text-black" : "text-white-500"}`} aria-hidden="true" />
+    </button>
+    <ShoppingCart isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
+  </button>
 
-          {/* Enlace a la tienda */}
-          <Link to="/Tienda">
-            <button className={`h-9 w-9 ${isLandingPage ? "bg-black" : ""}`} aria-hidden="true">
-              <span className="sr-only">Tienda</span>
-              <ShoppingBagIcon className={`h-9 w-9 ${isLandingPage ? "text-white" : "text-red-500"}`} aria-hidden="true" />
-            </button>
-          </Link>
-          
+  {/* Enlace a la tienda */}
+  <Link to="/Tienda">
+    <button className={`h-9 w-9 ${isLandingPage ? "bg-white" : ""}`} aria-hidden="true">
+      <span className="sr-only">Tienda</span>
+      <button className="btn"><ShoppingBagIcon className={`h-9 w-9 ${isLandingPage ? "text-black" : "text-black-500"}`} aria-hidden="true" /></button>
+    </button>
+  </Link>
 
-          {/* Dropdown del usuario */}
-          <Dropdown
-            arrowIcon={false}
-            inline
-            label={
-              <Bars3Icon className={`h-9 w-9 ${isLandingPage ? "text-white" : "text-red-500"}`} aria-hidden="true" strokeWidth={3} />
-            }
-          >
-            {idUsuario ? (
-              <Dropdown.Header>
-                <span className="block text-sm text-center font-semibold">¡Bienvenido (a)!</span>
-                <span className="block text-sm text-center font-normal">{userData.nombre || "Nombre no disponible"}</span>
-                <span className="block truncate text-sm font-light text-center">{userData.email || "Email no disponible"}</span>
-              </Dropdown.Header>
-            ) : (
-              <Dropdown.Header>
-                <span className="block text-sm">¡Bienvenido (a)!</span>
-              </Dropdown.Header>
-            )}
+  {/* Dropdown del usuario */}
+  <button className="btn">
+  <Dropdown
+    arrowIcon={false}
+    inline
+    label={
+      <Bars3Icon
+        className={`h-9 w-9 ${isLandingPage ? "text-black" : "text-black-500"}`}
+        aria-hidden="true"
+        strokeWidth={3}
+      />
+    }
+  >
+    {idUsuario ? (
+      <Dropdown.Header>
+        <span className="block text-sm text-center font-semibold">¡Bienvenido (a)!</span>
+        <span className="block text-sm text-center font-normal">{userData.nombre || "Nombre no disponible"}</span>
+        <span className="block truncate text-sm font-light text-center">{userData.email || "Email no disponible"}</span>
+      </Dropdown.Header>
+    ) : (
+      <Dropdown.Header>
+        <span className="block text-sm">¡Bienvenido (a)!</span>
+      </Dropdown.Header>
+    )}
 
-            {/* Opciones del dropdown */}
-            <Dropdown.Item>
-              <Link to="/Suscripciones">Suscripciones</Link>
-            </Dropdown.Item>
+    {/* Opciones del dropdown */}
+    <Dropdown.Item>
+      <Link to="/Suscripciones">Suscripciones</Link>
+    </Dropdown.Item>
 
-            {idUsuario && (
-              <Dropdown.Item>
-                <Link to="/PerfilUsuario">Mi perfil</Link>
-              </Dropdown.Item>
-            )}
+    {idUsuario && (
+      <Dropdown.Item>
+        <Link to="/PerfilUsuario">Mi perfil</Link>
+      </Dropdown.Item>
+    )}
 
-            <Dropdown.Item>
-              <Link to="/Uscupones">Mis cupones</Link>
-            </Dropdown.Item>
+    <Dropdown.Item>
+      <Link to="/Uscupones">Mis cupones</Link>
+    </Dropdown.Item>
 
-            {(idRol === 2 || idRol === 3) && (
-              <Dropdown.Item>
-                <Link to="/dashboard">Dashboard</Link>
-              </Dropdown.Item>
-            )}
+    {(idRol === 2 || idRol === 3) && (
+      <Dropdown.Item>
+        <Link to="/dashboard">Dashboard</Link>
+      </Dropdown.Item>
+    )}
 
-            <Dropdown.Divider />
+    <Dropdown.Divider />
 
-            <Dropdown.Item>
-              {idUsuario ? (
-                <Link to="/" onClick={handleLogout}>Cerrar sesión</Link>
-              ) : (
-                <Link to="/Login">Iniciar sesión</Link>
-              )}
-            </Dropdown.Item>
-          </Dropdown>
-        </div>
+    <Dropdown.Item>
+      {idUsuario ? (
+        <Link to="/" onClick={handleLogout}>Cerrar sesión</Link>
+      ) : (
+        <Link to="/Login">Iniciar sesión</Link>
+      )}
+    </Dropdown.Item>
+  </Dropdown>
+</button>
 
-       
-
+</div>
 
         {/* Botón de menú para pantallas pequeñas */}
         <div className="md:hidden flex items-center">
@@ -133,7 +146,7 @@ const Component = () => {
       {/* Dropdown móvil */}
       {isMobileMenuOpen && (
         
-        <div className={`md:hidden bg-black/80 rounded shadow mt-2`}>
+        <div className={`md:hidden bg-white/80 rounded shadow mt-2`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
             
             {/* Información del usuario */}
@@ -146,19 +159,19 @@ const Component = () => {
                 </div>
 
                 {/* Botón de carrito */}
-                <button onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }} className={`flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-white bg-black/80 hover:bg-black/70 transition duration-300`}>
+                <button onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }} className={`flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-white bg-white/80 hover:bg-white/70 transition duration-300`}>
                   <ShoppingCartIcon className="h-6 w-6 mr-2" />
                   Carrito
                 </button>
 
                 {/* Enlace a la tienda */}
-                <Link to="/Tienda" onClick={handleNavLinkClick} className={`flex items-center px-3 py-2 rounded-md text-base font-medium text-white bg-black/80 hover:bg-black/70 transition duration-300`}>
+                <Link to="/Tienda" onClick={handleNavLinkClick} className={`flex items-center px-3 py-2 rounded-md text-base font-medium text-black bg-black/80 hover:bg-black/70 transition duration-300`}>
                   <ShoppingBagIcon className="h-6 w-6 mr-2" />
                   Tienda
                 </Link>
 
                 {/* Suscripciones */}
-                <Link to="/Suscripciones" onClick={handleNavLinkClick} className={`block px-3 py-2 rounded-md text-base font-medium text-white bg-black/80 hover:bg-black/70 transition duration-300`}>
+                <Link to="/Suscripciones" onClick={handleNavLinkClick} className={`block px-3 py-2 rounded-md text-base font-medium text-black bg-black/80 hover:bg-black/70 transition duration-300`}>
                   Suscripciones
                 </Link>
 

@@ -63,7 +63,7 @@ function Landing() {
 
 
   return (
-    <div className="landing-page bg-black">
+    <div className="landing-page bg-white">
       {/* Navbar Fijo */}
       <Navbar />
 
@@ -71,7 +71,7 @@ function Landing() {
       <main className=" mt-10     transition-transform duration-700 ease-in-out"
         style={{ transform: `translateY(${translateY}px)` }}>
         {/* Sección de Imagen Principal */}
-        <div className="main-image-section bg-black ">
+        <div className="main-image-section bg-white ">
           <div className="main-image flex justify-center">
           <div className="relative w-full">
           <div className="relative w-full">
@@ -82,7 +82,7 @@ function Landing() {
             </Link>
  
 
-  <div className="bg-black w-full">
+  <div className="bg-white w-full">
     <img
       className="w-full h-80 sm:h-64 md:h-96 lg:h-[800px] pt-10"
       src={Perritos}
@@ -94,25 +94,25 @@ function Landing() {
           </div>
         </div>
 
-        <div className="bg-black md:py-10">
+        <div className="bg-white md:py-10">
           <div className="max-w-full overflow-hidden">
             <Carrusel />
           </div>
         </div>
 
-        <h2 className="pt-10 text-4xl sm:text-sm md:text-7xl lg:text-8xl font-bold bg-black text-white text-center"
-  style={{ letterSpacing: '0.6rem' }}>
-  C O L E C C I Ó N &nbsp; I N V I E R N O 
+        <h2 className="pt-10 text-4xl sm:text-sm md:text-7xl lg:text-8xl font-bold bg-white text-black text-center"
+  style={{ letterSpacing: '0.5rem' }}>
+  COLECCIÓN &nbsp; INVIERNO 
 </h2>
 
-        {/* Sección "CAMINANDO CON ESTILO" 
-        <div className="flex flex-col md:flex-row items-center bg-black justify-between px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-white text-center md:text-left mx-auto max-w-screen-xl">
+       
+        <div className="flex flex-col md:flex-row items-center bg-white justify-between px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-black text-center md:text-left mx-auto max-w-screen-xl">
             <h2 className="text-4xl sm:text-6xl md:text-8xl mb-4 font-bold text-center">&nbsp;CAMINANDO</h2>
-            <h2 className="text-4xl sm:text-8xl md:text-7xl mb-4 font-thin text-center">CON</h2>
+            <h2 className="text-4xl sm:text-6xl md:text-8xl mb-4 font-bold text-center">CON</h2>
             <h2 className="text-4xl sm:text-6xl md:text-8xl mb-4 font-bold text-center">ESTILO</h2>
           </div>
-          <div className="image-section bg-black bg-opacity-100 mt-8 md:mt-0">
+          <div className="image-section bg-white bg-opacity-100 mt-8 md:mt-0">
             <div className="image-content flex items-center justify-center">
               <img
                 className="w-48 sm:w-28 md:w-auto lg:w-auto h-auto"
@@ -121,7 +121,7 @@ function Landing() {
               />
             </div>
           </div>
-        </div>*/}
+        </div>*/
       </main>
 
 {/* Botones de desplazamiento */}
