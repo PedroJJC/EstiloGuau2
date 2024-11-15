@@ -30,19 +30,6 @@ app.use(bodyParser.json());
 let connection;
 
 // Conexión a la base de datos
-<<<<<<< HEAD
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'elias',
-  database: 'bdestiloguau'
-});
-
-connection.connect(error => {
-  if (error) throw error;
-  console.log("MySQL database connection established successfully");
-});
-=======
 async function initializeDBConnection() {
   try {
     connection = await mysql.createConnection({
@@ -58,7 +45,7 @@ async function initializeDBConnection() {
   }
 }
 initializeDBConnection();
->>>>>>> main
+
 
 // Configuración de Multer
 const storage = multer.diskStorage({
